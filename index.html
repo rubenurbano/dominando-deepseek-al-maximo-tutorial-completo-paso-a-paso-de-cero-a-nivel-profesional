@@ -1,0 +1,3514 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Dominando DeepSeek al Máximo — Tutorial Interactivo V001</title>
+<style>
+:root {
+  --bg-main: #0a0e1a;
+  --bg-card: #0f172a;
+  --bg-elevated: #16223b;
+  --blue-highlight: #1e3a5f;
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --accent-primary: #38bdf8;
+  --accent-secondary: #00d4ff;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f43f5e;
+  --accent-purple: #a855f7;
+  --border-color: #1e3a5f;
+  --font-scale: 1;
+  --header-height: 60px;
+}
+
+html[data-theme="light"] {
+  --bg-main: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-elevated: #e2e8f0;
+  --blue-highlight: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --accent-primary: #0284c7;
+  --accent-secondary: #0369a1;
+  --border-color: #94a3b8;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: calc(16px * var(--font-scale));
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  line-height: 1.65;
+  overflow-x: hidden;
+  padding-top: calc(var(--header-height) + 4px);
+  padding-bottom: 90px;
+}
+
+/* BARRA DE PROGRESO SUPERIOR */
+#reading-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-emerald), var(--accent-purple));
+  z-index: 60;
+  transition: width 0.15s ease-out;
+}
+
+/* BARRA DE NAVEGACIÓN FIJA */
+header.top-nav {
+  position: fixed;
+  top: 4px;
+  left: 0;
+  right: 0;
+  height: var(--header-height);
+  background: rgba(15, 23, 42, 0.96);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 8px;
+}
+
+html[data-theme="light"] header.top-nav {
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.nav-scroll-container {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  flex: 1;
+  padding: 4px 2px;
+}
+
+.nav-scroll-container::-webkit-scrollbar {
+  display: none;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 6px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.chip:hover, .chip:focus-visible {
+  border-color: var(--accent-primary);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 1px;
+}
+
+.chip.active {
+  background: linear-gradient(135deg, #0284c7, #1e3a5f);
+  color: #ffffff;
+  border-color: var(--accent-secondary);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+}
+
+#mb {
+  background: var(--bg-elevated);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  font-weight: 700;
+}
+
+/* PANEL LATERAL ÍNDICE (#dr) */
+#dr {
+  position: fixed;
+  top: 64px;
+  left: 0;
+  bottom: 0;
+  width: min(330px, 88vw);
+  background: #0f172a;
+  border-right: 1px solid #1e3a5f;
+  transform: translateX(-105%);
+  transition: .25s ease;
+  z-index: 45;
+  overflow-y: auto;
+  padding: 12px 10px 80px 10px;
+  box-shadow: 8px 0 30px rgba(0, 0, 0, 0.6);
+}
+
+html[data-theme="light"] #dr {
+  background: #ffffff;
+  border-right: 1px solid #94a3b8;
+}
+
+#dr.o {
+  transform: none;
+}
+
+#dr a {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  color: #e2e8f0;
+  cursor: pointer;
+  min-height: 44px;
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 500;
+  margin-bottom: 4px;
+  border: 1px solid transparent;
+}
+
+html[data-theme="light"] #dr a {
+  color: #0f172a;
+}
+
+#dr a:hover, #dr a:focus-visible {
+  background: #ffffff0d;
+  border-color: var(--accent-primary);
+  outline: none;
+}
+
+#dr a.on {
+  background: #00d4ff22;
+  color: #00d4ff;
+  font-weight: 700;
+  border-color: #00d4ff55;
+}
+
+html[data-theme="light"] #dr a.on {
+  background: #0284c722;
+  color: #0284c7;
+}
+
+/* BARRA DE HERRAMIENTAS INTERACTIVAS */
+.utility-bar {
+  max-width: 1120px;
+  margin: 10px auto 0 auto;
+  padding: 8px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 220px;
+}
+
+.search-box input {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+.tool-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.btn-tool {
+  min-height: 42px;
+  min-width: 42px;
+  padding: 6px 11px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn-tool:hover, .btn-tool:focus-visible {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  outline: none;
+}
+
+#search-results-panel {
+  max-width: 1120px;
+  margin: 8px auto;
+  padding: 12px;
+  background: var(--bg-card);
+  border: 2px solid var(--accent-primary);
+  border-radius: 12px;
+  display: none;
+}
+
+.search-hit-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 10px 12px;
+  margin-top: 6px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  color: var(--text-primary);
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.search-hit-item:hover {
+  border-color: var(--accent-primary);
+}
+
+/* CONTENEDOR PRINCIPAL Y PESTAÑAS */
+main.container {
+  max-width: 1120px;
+  margin: 12px auto;
+  padding: 0 10px;
+}
+
+section.tab-panel {
+  display: none;
+  animation: fadeInPanel 0.25s ease-out;
+}
+
+section.tab-panel.active {
+  display: block;
+}
+
+@keyframes fadeInPanel {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* TARJETAS Y COMPONENTES PEDAGÓGICOS */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.22);
+}
+
+.hero-card {
+  background: radial-gradient(circle at top right, #1e3a5f55, var(--bg-card) 70%);
+  border: 1px solid var(--accent-primary);
+}
+
+h1 {
+  font-size: clamp(1.45rem, 4.8vw, 2.25rem);
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.author-byline {
+  color: var(--accent-primary);
+  font-weight: 800;
+  display: inline-block;
+}
+
+h2 {
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
+  color: var(--accent-primary);
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+h3 {
+  font-size: clamp(1.08rem, 3.4vw, 1.35rem);
+  color: var(--text-primary);
+  margin: 18px 0 10px 0;
+}
+
+h4 {
+  font-size: 1rem;
+  color: var(--accent-secondary);
+  margin: 12px 0 6px 0;
+}
+
+p {
+  margin-bottom: 12px;
+  word-wrap: break-word;
+}
+
+ul, ol {
+  margin: 0 0 14px 20px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 14px 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  color: var(--accent-primary);
+}
+
+.badge.emerald { color: var(--accent-emerald); border-color: #10b98155; }
+.badge.amber { color: var(--accent-amber); border-color: #f59e0b55; }
+.badge.rose { color: var(--accent-rose); border-color: #f43f5e55; }
+.badge.purple { color: var(--accent-purple); border-color: #a855f755; }
+
+/* BLOQUES DE SECUENCIA PEDAGÓGICA */
+.pedagogy-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.pedagogy-box {
+  background: var(--bg-elevated);
+  border-left: 4px solid var(--accent-primary);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.pedagogy-box.purpose { border-left-color: var(--accent-emerald); }
+.pedagogy-box.importance { border-left-color: var(--accent-amber); }
+.pedagogy-box.warning { border-left-color: var(--accent-rose); }
+
+/* PROCEDIMIENTOS PASO A PASO */
+.step-list {
+  list-style: none;
+  margin-left: 0;
+}
+
+.step-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.step-num {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+  color: #0a0e1a;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 0.9rem;
+}
+
+/* BLOQUES COPIABLES (CÓDIGO, PROMPTS, COMANDOS) */
+.copy-block {
+  background: #060913;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin: 12px 0;
+  overflow: hidden;
+}
+
+html[data-theme="light"] .copy-block {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
+.copy-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(30, 58, 95, 0.45);
+  border-bottom: 1px solid var(--border-color);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.copy-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.btn-copy {
+  min-height: 38px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--accent-primary);
+  background: rgba(56, 189, 248, 0.15);
+  color: #ffffff;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-copy:hover {
+  background: var(--accent-primary);
+  color: #0a0e1a;
+}
+
+.copy-content {
+  padding: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.88rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #e2e8f0;
+  line-height: 1.55;
+}
+
+/* TARJETAS DE ENLACES URL CON BOTONES OBLIGATORIOS */
+.url-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.url-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.84rem;
+  color: var(--accent-primary);
+  word-break: break-all;
+}
+
+.url-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.btn-ext-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0284c7, #1e3a5f);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 0.83rem;
+  font-weight: 700;
+  border: 1px solid var(--accent-secondary);
+  cursor: pointer;
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.btn-ext-link:hover {
+  filter: brightness(1.12);
+}
+
+/* TABLAS ADAPTABLES PARA MÓVIL 360PX */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  margin: 14px 0;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 540px;
+  font-size: 0.88rem;
+}
+
+th, td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  vertical-align: top;
+}
+
+th {
+  background: var(--blue-highlight);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* DESPLEGABLES Y Q&A */
+details.qa-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+details.qa-item summary {
+  padding: 13px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  list-style: none;
+  color: var(--text-primary);
+}
+
+details.qa-item summary::-webkit-details-marker {
+  display: none;
+}
+
+details.qa-item summary::after {
+  content: "＋";
+  color: var(--accent-primary);
+  font-weight: 900;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+details.qa-item[open] summary::after {
+  content: "－";
+}
+
+details.qa-item[open] summary {
+  border-bottom: 1px solid var(--border-color);
+  background: rgba(56, 189, 248, 0.08);
+}
+
+.qa-answer {
+  padding: 14px;
+  color: var(--text-primary);
+}
+
+.qa-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 14px 0;
+}
+
+.btn-qa-toggle {
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: 1px solid var(--accent-primary);
+  background: var(--bg-elevated);
+  color: var(--accent-primary);
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  flex: 1 1 200px;
+}
+
+.btn-qa-toggle:hover {
+  background: var(--accent-primary);
+  color: #0a0e1a;
+}
+
+/* CHECKLISTS PERSISTENTES */
+.checklist-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.checklist-item input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--accent-emerald);
+  flex-shrink: 0;
+}
+
+/* SVG HERO Y CRÉDITOS CONTENEDOR 4:5 */
+.svg-hero-wrapper {
+  max-width: 440px;
+  margin: 0 auto 16px auto;
+  background: #060a14;
+  border: 1px solid var(--accent-primary);
+  border-radius: 16px;
+  padding: 8px;
+  box-shadow: 0 0 30px rgba(0, 212, 255, 0.2);
+}
+
+.svg-mount-slot {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.svg-mount-slot svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ANIMACIONES CSS INTERNAS DEL SVG */
+@keyframes pulseCore {
+  0%, 100% { transform: scale(1); opacity: 0.95; }
+  50% { transform: scale(1.07); opacity: 1; }
+}
+@keyframes rotateClockwise {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+@keyframes rotateCounter {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+@keyframes dashFlow {
+  to { stroke-dashoffset: -120; }
+}
+@keyframes floatVertical {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-7px); }
+}
+@keyframes radarSweep {
+  0% { transform: rotate(0deg); opacity: 0.65; }
+  100% { transform: rotate(360deg); opacity: 0.65; }
+}
+
+.svg-rot-cw {
+  transform-origin: 200px 230px;
+  animation: rotateClockwise 26s linear infinite;
+}
+.svg-rot-ccw {
+  transform-origin: 200px 230px;
+  animation: rotateCounter 19s linear infinite;
+}
+.svg-core-pulse {
+  transform-origin: 200px 230px;
+  animation: pulseCore 3.4s ease-in-out infinite;
+}
+.svg-data-stream {
+  stroke-dasharray: 8 6;
+  animation: dashFlow 3.5s linear infinite;
+}
+.svg-float-card {
+  animation: floatVertical 4.2s ease-in-out infinite;
+}
+.svg-radar {
+  transform-origin: 200px 230px;
+  animation: radarSweep 9s linear infinite;
+}
+
+.svg-paused * {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svg-rot-cw, .svg-rot-ccw, .svg-core-pulse, .svg-data-stream, .svg-float-card, .svg-radar {
+    animation: none !important;
+  }
+}
+
+/* NAVEGACIÓN FIJA AL FINAL DE CADA PESTAÑA */
+.tab-footer-nav {
+  margin-top: 22px;
+  padding: 14px;
+  background: var(--bg-card);
+  border: 1px solid var(--accent-primary);
+  border-radius: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  bottom: 10px;
+  z-index: 20;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.45);
+}
+
+.btn-nav-step {
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--accent-primary);
+  background: linear-gradient(135deg, #0f172a, #1e3a5f);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.86rem;
+  cursor: pointer;
+  flex: 1 1 140px;
+  text-align: center;
+}
+
+.btn-nav-step:hover {
+  background: var(--accent-primary);
+  color: #0a0e1a;
+}
+
+/* BOTONES FLOTANTES ARRASTRABLES (INICIO Y ARRIBA) */
+.floating-draggable {
+  position: fixed;
+  z-index: 50;
+  min-height: 44px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  border: 2px solid var(--accent-secondary);
+  background: rgba(15, 23, 42, 0.94);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.55);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.floating-draggable:active {
+  cursor: grabbing;
+  border-color: var(--accent-emerald);
+}
+
+#fab-home {
+  right: 10px;
+  bottom: 132px;
+}
+
+#fab-top {
+  right: 10px;
+  bottom: 78px;
+}
+
+/* CRÉDITOS DESTACADOS */
+.credits-author-box {
+  text-align: center;
+  padding: 20px 14px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.16), transparent 75%);
+  border: 2px solid var(--accent-primary);
+  border-radius: 14px;
+  margin: 16px 0;
+}
+
+.credits-author-name {
+  font-size: clamp(1.9rem, 7vw, 3rem);
+  font-weight: 900;
+  color: var(--accent-secondary);
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 18px rgba(0, 212, 255, 0.35);
+  margin-bottom: 4px;
+}
+
+.credits-author-role {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* SIMULADOR INTERACTIVO DE REUNIONES EN EL TUTORIAL */
+.sim-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.sim-field label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.sim-field input {
+  width: 100%;
+  min-height: 42px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.sim-result-banner {
+  background: var(--bg-main);
+  border: 1px solid var(--accent-emerald);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+/* OPTIMIZACIÓN SAMSUNG GALAXY A02s (360px) */
+@media (max-width: 400px) {
+  body {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  main.container {
+    padding: 0 6px;
+  }
+  .card {
+    padding: 12px 10px;
+  }
+  .chip {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
+  .url-actions {
+    flex-direction: column;
+  }
+  .btn-ext-link, .btn-copy {
+    width: 100%;
+  }
+}
+
+/* HOJA DE ESTILOS DE IMPRESIÓN A4 */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 14mm 12mm 14mm 12mm;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    font-size: 10.5pt !important;
+  }
+  header.top-nav,
+  #dr,
+  .utility-bar,
+  #search-results-panel,
+  .tab-footer-nav,
+  .floating-draggable,
+  #reading-progress-bar,
+  .btn-copy,
+  .qa-controls,
+  .svg-controls-row {
+    display: none !important;
+  }
+  section.tab-panel {
+    display: block !important;
+    margin-bottom: 18px !important;
+    page-break-inside: auto;
+  }
+  .card, .pedagogy-box, .step-item, .copy-block, details.qa-item, .url-card {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #444444 !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  h1, h2, h3, h4, .credits-author-name, .author-byline, .url-text, .copy-content {
+    color: #000000 !important;
+    text-shadow: none !important;
+  }
+  .table-responsive {
+    overflow: visible !important;
+  }
+  table {
+    min-width: 100% !important;
+    font-size: 9pt !important;
+  }
+  th {
+    background: #e2e8f0 !important;
+    color: #000000 !important;
+  }
+  .svg-hero-wrapper {
+    max-width: 240px !important;
+    border: 1px solid #000000 !important;
+    background: #ffffff !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="reading-progress-bar" role="progressbar" aria-label="Progreso de lectura"></div>
+
+<!-- PLANTILLA SVG ÚNICA OCULTA (SE EXTRAE Y ELIMINA DEL DOM AL INICIAR) -->
+<div id="svg-master-source" style="display:none;" aria-hidden="true">
+  <svg viewBox="0 0 400 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ilustración animada del ecosistema DeepSeek: núcleo MoE de 552B parámetros, arquitectura de plugins Cordis, nube gratuita y ejecución privada local con Ollama">
+    <defs>
+      <radialGradient id="IDP_bgGlow" cx="50%" cy="46%" r="60%">
+        <stop offset="0%" stop-color="#0f294a" />
+        <stop offset="55%" stop-color="#091326" />
+        <stop offset="100%" stop-color="#050811" />
+      </radialGradient>
+      <linearGradient id="IDP_cyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00d4ff" />
+        <stop offset="50%" stop-color="#38bdf8" />
+        <stop offset="100%" stop-color="#0284c7" />
+      </linearGradient>
+      <linearGradient id="IDP_emeraldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="#10b981" />
+        <stop offset="100%" stop-color="#34d399" />
+      </linearGradient>
+      <linearGradient id="IDP_purpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#a855f7" />
+        <stop offset="100%" stop-color="#6366f1" />
+      </linearGradient>
+      <filter id="IDP_neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3.5" result="blur" />
+        <feMerge>
+          <feMergeNode in="blur" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+    </defs>
+
+    <!-- Fondo espacial técnico 4:5 -->
+    <rect width="400" height="500" rx="14" fill="url(#IDP_bgGlow)" />
+
+    <!-- Cuadrícula de arquitectura de ingeniería -->
+    <g stroke="#1e3a5f" stroke-width="0.6" opacity="0.45">
+      <line x1="0" y1="70" x2="400" y2="70" />
+      <line x1="0" y1="150" x2="400" y2="150" />
+      <line x1="0" y1="230" x2="400" y2="230" />
+      <line x1="0" y1="310" x2="400" y2="310" />
+      <line x1="0" y1="390" x2="400" y2="390" />
+      <line x1="70" y1="0" x2="70" y2="500" />
+      <line x1="135" y1="0" x2="135" y2="500" />
+      <line x1="200" y1="0" x2="200" y2="500" />
+      <line x1="265" y1="0" x2="265" y2="500" />
+      <line x1="330" y1="0" x2="330" y2="500" />
+    </g>
+
+    <!-- Cabecera del HUD SVG -->
+    <rect x="16" y="14" width="368" height="36" rx="8" fill="#0f172a" stroke="#38bdf8" stroke-width="1.2" />
+    <circle cx="34" cy="32" r="5" fill="#10b981">
+      <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite" />
+    </circle>
+    <text x="48" y="36" fill="#e2e8f0" font-family="monospace" font-size="11" font-weight="bold">DEEPSEEK ECOSYSTEM // V4.1 FLASH + R1 + DSH</text>
+
+    <!-- Anillos orbitales de Mezcla de Expertos (MoE) -->
+    <g class="svg-rot-cw">
+      <circle cx="200" cy="230" r="126" fill="none" stroke="#1e3a5f" stroke-width="1.5" stroke-dasharray="14 8 4 8" />
+      <circle cx="200" cy="104" r="6" fill="#00d4ff" filter="url(#IDP_neonGlow)" />
+      <circle cx="326" cy="230" r="6" fill="#10b981" filter="url(#IDP_neonGlow)" />
+      <circle cx="200" cy="356" r="6" fill="#a855f7" filter="url(#IDP_neonGlow)" />
+      <circle cx="74" cy="230" r="6" fill="#f59e0b" filter="url(#IDP_neonGlow)" />
+    </g>
+
+    <g class="svg-rot-ccw">
+      <circle cx="200" cy="230" r="96" fill="none" stroke="#38bdf8" stroke-width="1.4" stroke-dasharray="22 12" opacity="0.75" />
+      <polygon points="200,128 206,138 194,138" fill="#00d4ff" />
+      <polygon points="200,332 206,322 194,322" fill="#10b981" />
+    </g>
+
+    <!-- Barrido de auditoría de Trayectoria -->
+    <g class="svg-radar">
+      <path d="M200,230 L200,115 A115,115 0 0,1 295,165 Z" fill="url(#IDP_cyanGrad)" opacity="0.16" />
+    </g>
+
+    <!-- Líneas de flujo agéntico hacia los 4 módulos periféricos -->
+    <path class="svg-data-stream" d="M200,230 L76,108" stroke="#00d4ff" stroke-width="2.2" fill="none" />
+    <path class="svg-data-stream" d="M200,230 L324,108" stroke="#a855f7" stroke-width="2.2" fill="none" />
+    <path class="svg-data-stream" d="M200,230 L76,358" stroke="#10b981" stroke-width="2.2" fill="none" />
+    <path class="svg-data-stream" d="M200,230 L324,358" stroke="#f59e0b" stroke-width="2.2" fill="none" />
+
+    <!-- NODO 1: CHAT WEB + APP MÓVIL (Arriba Izquierda) -->
+    <g class="svg-float-card">
+      <rect x="18" y="68" width="118" height="64" rx="10" fill="#0f172a" stroke="#00d4ff" stroke-width="1.6" />
+      <text x="28" y="88" fill="#00d4ff" font-family="sans-serif" font-size="10" font-weight="bold">1. NUBE GRATUITA</text>
+      <text x="28" y="103" fill="#e2e8f0" font-family="monospace" font-size="9">Chat Web [Run]</text>
+      <text x="28" y="118" fill="#94a3b8" font-family="monospace" font-size="9">App Voz iOS/And</text>
+    </g>
+
+    <!-- NODO 2: DEEPSEEK HARNESS & CORDIS (Arriba Derecha) -->
+    <g class="svg-float-card">
+      <rect x="264" y="68" width="118" height="64" rx="10" fill="#0f172a" stroke="#a855f7" stroke-width="1.6" />
+      <text x="274" y="88" fill="#c084fc" font-family="sans-serif" font-size="10" font-weight="bold">2. HARNESS (dsh)</text>
+      <text x="274" y="103" fill="#e2e8f0" font-family="monospace" font-size="9">Cordis Plugins</text>
+      <text x="274" y="118" fill="#94a3b8" font-family="monospace" font-size="9">Modo Creador</text>
+    </g>
+
+    <!-- NODO 3: OLLAMA LOCAL OFFLINE (Abajo Izquierda) -->
+    <g class="svg-float-card">
+      <rect x="18" y="332" width="118" height="66" rx="10" fill="#0f172a" stroke="#10b981" stroke-width="1.6" />
+      <text x="28" y="352" fill="#10b981" font-family="sans-serif" font-size="10" font-weight="bold">3. LOCAL 100%</text>
+      <text x="28" y="367" fill="#e2e8f0" font-family="monospace" font-size="9">Ollama R1:8B</text>
+      <text x="28" y="382" fill="#94a3b8" font-family="monospace" font-size="9">:11434/v1 Offline</text>
+    </g>
+
+    <!-- NODO 4: API & CACHÉ KV (Abajo Derecha) -->
+    <g class="svg-float-card">
+      <rect x="264" y="332" width="118" height="66" rx="10" fill="#0f172a" stroke="#f59e0b" stroke-width="1.6" />
+      <text x="274" y="352" fill="#f59e0b" font-family="sans-serif" font-size="10" font-weight="bold">4. API &amp; FREE</text>
+      <text x="274" y="367" fill="#e2e8f0" font-family="monospace" font-size="9">Cache Hit $0.003</text>
+      <text x="274" y="382" fill="#94a3b8" font-family="monospace" font-size="9">OpenCode / NIM</text>
+    </g>
+
+    <!-- NÚCLEO CENTRAL PROTAGONISTA: MOTOR DEEPSEEK MoE + CETÁCEO CIBERNÉTICO -->
+    <g class="svg-core-pulse">
+      <polygon points="200,162 258,196 258,264 200,298 142,264 142,196" fill="#0b1930" stroke="url(#IDP_cyanGrad)" stroke-width="3" filter="url(#IDP_neonGlow)" />
+      <circle cx="200" cy="230" r="44" fill="#071020" stroke="#00d4ff" stroke-width="1.5" />
+      <!-- Silueta estilizada del emblema neuronal / ballena DeepSeek -->
+      <path d="M172,232 C176,212 198,206 216,216 C225,221 232,215 237,209 C235,222 229,231 220,235 C225,241 215,249 196,247 C181,246 174,239 172,232 Z" fill="url(#IDP_cyanGrad)" />
+      <circle cx="186" cy="224" r="2.6" fill="#ffffff" />
+      <text x="200" y="262" text-anchor="middle" fill="#38bdf8" font-family="monospace" font-size="9.5" font-weight="bold">1M TOKENS</text>
+    </g>
+
+    <!-- PANEL INFERIOR TELEMETRÍA Y ARQUITECTURA -->
+    <rect x="16" y="416" width="368" height="68" rx="10" fill="#0f172a" stroke="#1e3a5f" stroke-width="1.5" />
+    <text x="28" y="436" fill="#38bdf8" font-family="monospace" font-size="10" font-weight="bold">TELEMETRÍA DE ARQUITECTURA ABIERTA (MIT)</text>
+    <rect x="28" y="446" width="102" height="26" rx="5" fill="#16223b" stroke="#00d4ff" stroke-width="1" />
+    <text x="79" y="463" text-anchor="middle" fill="#e2e8f0" font-family="monospace" font-size="9">552B MoE (8B/16B)</text>
+    <rect x="148" y="446" width="104" height="26" rx="5" fill="#16223b" stroke="#10b981" stroke-width="1" />
+    <text x="200" y="463" text-anchor="middle" fill="#10b981" font-family="monospace" font-size="9">50% OFF-PEAK</text>
+    <rect x="270" y="446" width="102" height="26" rx="5" fill="#16223b" stroke="#a855f7" stroke-width="1" />
+    <text x="321" y="463" text-anchor="middle" fill="#c084fc" font-family="monospace" font-size="9">PRIVACIDAD 100%</text>
+  </svg>
+</div>
+
+<!-- BARRA SUPERIOR CON BOTÓN ÍNDICE Y PESTAÑAS CON NOMBRES DESCRIPTIVOS -->
+<header class="top-nav" role="navigation" aria-label="Navegación principal del tutorial">
+  <button class="chip" id="mb" aria-label="Abrir índice" aria-expanded="false">☰ Índice</button>
+  <div class="nav-scroll-container" id="nav-chips-container">
+    <button class="chip active" data-tab-index="0">INICIO</button>
+    <button class="chip" data-tab-index="1">Fundamentos y Modelos</button>
+    <button class="chip" data-tab-index="2">Chat Web y App Móvil</button>
+    <button class="chip" data-tab-index="3">DeepSeek Harness</button>
+    <button class="chip" data-tab-index="4">APIs y Plugins</button>
+    <button class="chip" data-tab-index="5">IA Local con Ollama</button>
+    <button class="chip" data-tab-index="6">Modelos Sin Filtros y Privacidad</button>
+    <button class="chip" data-tab-index="7">Proyectos y Glosario</button>
+    <button class="chip" data-tab-index="8">PROMPTS</button>
+    <button class="chip" data-tab-index="9">33 Preguntas (Q&amp;A)</button>
+    <button class="chip" data-tab-index="10">ERRORES</button>
+    <button class="chip" data-tab-index="11">RESUMEN</button>
+    <button class="chip" data-tab-index="12">FUENTES</button>
+    <button class="chip" data-tab-index="13">CRÉDITOS</button>
+  </div>
+</header>
+
+<!-- PANEL DESLIZANTE DEL ÍNDICE (#dr) -->
+<div id="dr" role="dialog" aria-label="Índice completo de secciones"></div>
+
+<!-- BARRA DE UTILIDADES INTERACTIVAS -->
+<div class="utility-bar" role="region" aria-label="Herramientas de lectura y búsqueda">
+  <div class="search-box">
+    <input type="search" id="global-search-input" placeholder="🔍 Buscar término, comando, puerto (ej. 11434, Cordis, Run)..." aria-label="Buscar en todo el tutorial">
+    <button class="btn-tool" id="btn-clear-search" title="Limpiar búsqueda">✕</button>
+  </div>
+  <div class="tool-buttons">
+    <button class="btn-tool" id="btn-font-dec" aria-label="Reducir tamaño de letra">A−</button>
+    <button class="btn-tool" id="btn-font-inc" aria-label="Aumentar tamaño de letra">A+</button>
+    <button class="btn-tool" id="btn-theme-toggle" aria-label="Cambiar entre tema oscuro y claro">🌓 Tema</button>
+    <button class="btn-tool" id="btn-toggle-svg-anim" aria-label="Pausar o reanudar animación SVG">⏯ SVG</button>
+    <button class="btn-tool" id="btn-print-pdf" aria-label="Imprimir o guardar como PDF">🖨️ PDF</button>
+  </div>
+</div>
+
+<div id="search-results-panel" role="region" aria-live="polite"></div>
+
+<main class="container">
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 0: INICIO -->
+  <!-- ================================================================= -->
+  <section class="tab-panel active" id="sec-0" data-t="INICIO">
+    <div class="card hero-card">
+      <div class="svg-hero-wrapper">
+        <div id="svg-slot-home" class="svg-mount-slot" role="img" aria-label="Ilustración interactiva animada del ecosistema DeepSeek"></div>
+      </div>
+
+      <div class="badge-row">
+        <span class="badge emerald">100% Fiel a las Fuentes</span>
+        <span class="badge">De Cero a Nivel PRO</span>
+        <span class="badge purple">Optimizado Móvil 360px</span>
+        <span class="badge amber">Sin Dependencias Externas</span>
+      </div>
+
+      <h1>Dominando DeepSeek al Máximo: Tutorial Completo Paso a Paso de Cero a Nivel Profesional <span class="author-byline">by Rubén Sbarsky</span></h1>
+
+      <p>Bienvenido al manual interactivo definitivo basado íntegramente en la transcripción y notas del tutorial <strong>«Cómo usar DeepSeek Mejor que el 99% de las personas (GRATIS)»</strong> (canal Alejavi Rivera), verificado y ampliado con la documentación técnica oficial de <strong>DeepSeek</strong>, <strong>DeepSeek Harness (`dsh`)</strong>, <strong>Ollama</strong>, <strong>OpenCode</strong> y las plataformas del ecosistema.</p>
+
+      <div style="margin: 14px 0;">
+        <button class="chip" id="ix" type="button" style="background:var(--accent-primary);color:#0a0e1a;font-weight:800;">☰ Ver índice</button>
+      </div>
+
+      <div class="pedagogy-grid">
+        <div class="pedagogy-box">
+          <h4>¿QUÉ ES ESTE TUTORIAL?</h4>
+          <p>Una estación de aprendizaje progresiva y autodidacta para que cualquier persona, incluso sin experiencia previa en programación, terminales ni inteligencia artificial, domine desde el primer chat gratuito en navegador hasta agentes autónomos en escritorio, plugins propios y modelos locales 100% privados sin conexión a internet.</p>
+        </div>
+        <div class="pedagogy-box purpose">
+          <h4>¿PARA QUÉ SIRVE?</h4>
+          <p>Para pasar del uso básico conversacional que hace el 99% de los usuarios a exprimir mini aplicaciones con el botón <code>Run</code>, automatizar carpetas reales con <strong>DeepSeek Harness</strong>, conectar motores gratuitos como <strong>OpenCode</strong> y ejecutar <strong>DeepSeek-R1</strong> en tu propio ordenador con <strong>Ollama</strong>.</p>
+        </div>
+        <div class="pedagogy-box importance">
+          <h4>¿POR QUÉ IMPORTA?</h4>
+          <p>Porque te otorga soberanía tecnológica y ahorro económico total: aprenderás a elegir cuándo trabajar gratis en la nube, cuándo gastar apenas fracciones de céntimo por millón de tokens con caché KV y cuándo blindar tus documentos confidenciales trabajando con el Wi-Fi apagado.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>1. Índice Maestro Jerárquico del Recorrido Pedagógico</h2>
+      <p>Para aprender de forma progresiva y sin saltos bruscos, la estructura sigue una curva ascendente dividida en catorce bloques maestros integrados en nuestras pestañas interactivas:</p>
+      <ol>
+        <li><strong>Índice Maestro Jerárquico</strong> (ubicado en esta pestaña de INICIO y accesible siempre desde el botón superior <strong>☰ Índice</strong>).</li>
+        <li><strong>Fundamentos del Ecosistema DeepSeek y Mapa de Modelos:</strong> origen en Hangzhou (Liang Wenfeng / High-Flyer), impacto de enero de 2025, arquitectura MoE de pesos abiertos (licencia MIT), compresión de caché KV y tabla comparativa de modelos (Flash, Pro, R1, R1 Destilados y OCR).</li>
+        <li><strong>Nivel Inicial — Uso Gratuito en la Nube (Chat Web y App Móvil):</strong> creación de cuenta gratuita, anatomía del prompt, Caso Práctico 1 (mini aplicación financiera de coste de reuniones con botón <code>Run</code>), instalación móvil oficial y dictado por voz.</li>
+        <li><strong>Nivel Intermedio — DeepSeek Harness (`dsh`) en Escritorio y Navegador:</strong> qué es un <em>harness</em>, arquitectura modular Cordis («todo es un plugin»), instalación en Windows/macOS y vía consola (`npx @deepseek-ai/dsh web` en puerto `3080`), omisión de saldo inicial, Workspace obligatorio, los 4 modos (Estándar, PTC, Mínimo y Creador), los 4 permisos, Caso Práctico 2 (presentación 16:9 + PDF en ~7 minutos) y auditoría con Trayectoria y Uso de Modelos.</li>
+        <li><strong>Nivel Avanzado — APIs Oficiales, Proveedores Gratuitos, Complementos y Modo Creador:</strong> API Keys, tarifas Peak/Off-Peak (50% de descuento y Cache Hit a $0.003), SDKs de OpenAI y Anthropic, proveedores gratuitos (OpenCode, OpenRouter, Nvidia NIM, Codex), instalación de plugins desde GitHub y Modo Creador (contador de tareas, monitor de gasto, rediseño *alejadnes*, globo 3D, Pomodoro flotante y tareas programadas).</li>
+        <li><strong>Nivel Profesional Local — Ejecución 100% Privada, Gratuita y Offline:</strong> RAM, VRAM, parámetros y cuantización; análisis de hardware con CanIRun.ai y CanItRun.dev; instalación de Ollama (`ollama pull deepseek-r1:8b`); prueba sin internet y los dos métodos de enlace con DeepSeek Harness (`ollama launch dsh` y `http://localhost:11434/v1`), más alternativas Jan y LM Studio.</li>
+        <li><strong>Nivel Profesional Avanzado — Modelos Comunitarios de Pesos Modificados y Privacidad Digital:</strong> diferencia entre trucos de prompt y abliteración matemática en pesos abiertos, 4 casos de uso legítimos y responsables, nube privada (Abliteration.ai) frente a Hugging Face (`DeepSeek V4 Pro basado en Qwen 3.5` de 9B) y protección frente a <em>data brokers</em> (Incogni).</li>
+        <li><strong>Buenas Prácticas de Seguridad, Costes, Permisos y Rendimiento.</strong></li>
+        <li><strong>Solución de Problemas (Troubleshooting Paso a Paso)</strong> en la pestaña <strong>ERRORES</strong>.</li>
+        <li><strong>Proyectos Integradores Autodidactas (De Inicial a PRO) y Glosario Técnico Esencial.</strong></li>
+        <li><strong>33 Preguntas y Respuestas por Niveles (Nivel 1 Básico, Nivel 2 Avanzado y Nivel 3 PRO)</strong> en su pestaña dedicada <strong>33 Preguntas (Q&amp;A)</strong>.</li>
+        <li><strong>Repositorio Completo de Prompts (17 Prompts)</strong> en la pestaña dedicada <strong>PROMPTS</strong>.</li>
+        <li><strong>Fuentes Fiables y Documentación Oficial</strong> con botones directos de apertura en nueva ventana.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h3>Lista de Comprobación Inicial (Tu Progreso Se Guarda Automáticamente)</h3>
+      <label class="checklist-item">
+        <input type="checkbox" data-check-id="chk-init-1">
+        <span>Comprendo que el Chat Web y la App Móvil de DeepSeek son 100% gratuitos y no tienen suscripción mensual obligatoria.</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" data-check-id="chk-init-2">
+        <span>Sé usar los botones de este tutorial: buscador superior, ajuste de letra (A-/A+), cambio de tema, botones COPIAR y panel ☰ Índice.</span>
+      </label>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 1: FUNDAMENTOS Y MODELOS -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-1" data-t="Fundamentos y Modelos">
+    <div class="card">
+      <h2>2. Fundamentos del Ecosistema DeepSeek y Mapa de Modelos</h2>
+
+      <div class="pedagogy-grid">
+        <div class="pedagogy-box">
+          <h4>¿QUÉ ES DEEPSEEK?</h4>
+          <p>Una empresa tecnológica china fundada en 2023 en <strong>Hangzhou</strong> (a menudo transcrita por error en subtítulos automáticos como <em>Hano</em>) y liderada por <strong>Liang Wenfeng</strong> (transcrito a veces como <em>Lian Wenfen</em>), ingeniero vinculado previamente al fondo de inversión cuantitativo <strong>High-Flyer</strong>.</p>
+        </div>
+        <div class="pedagogy-box purpose">
+          <h4>¿PARA QUÉ SIRVE SU ARQUITECTURA?</h4>
+          <p>Para ofrecer inteligencia artificial general de primer nivel mundial con un coste de entrenamiento y operación drásticamente menor gracias a su diseño de <strong>Mezcla de Expertos (MoE)</strong> y compresión de memoria intermedia (caché KV).</p>
+        </div>
+        <div class="pedagogy-box importance">
+          <h4>¿POR QUÉ CAMBIÓ EL MERCADO?</h4>
+          <p>En enero de 2025, el lanzamiento de <strong>DeepSeek-R1</strong> igualó o superó a los modelos propietarios estadounidenses en lógica, matemáticas y código con una fracción del coste, provocando un impacto bursátil histórico y abriendo la era de los agentes de pesos abiertos.</p>
+        </div>
+      </div>
+
+      <h3>2.1. Qué es el código abierto (pesos abiertos) y cómo se sostiene su modelo gratuito y económico</h3>
+      <p>Cuando un laboratorio publica un modelo de <strong>pesos abiertos</strong> (frecuentemente llamado <em>código abierto</em> bajo licencias permisivas como la <strong>licencia MIT</strong>), significa que no esconde la «receta matemática» entrenada dentro de servidores privados. Cualquier persona o empresa puede descargar esos archivos (llamados <em>pesos</em>), estudiarlos, modificarlos y ejecutarlos en sus propios ordenadores sin pagar licencias por usuario.</p>
+      <p>¿Cómo logra DeepSeek ofrecer chat gratuito sin suscripción, tarifas de API mínimas y modelos descargables gratis? Gracias a tres pilares documentados oficialmente:</p>
+      <ol>
+        <li><strong>Eficiencia de arquitectura MoE (<em>Mixture of Experts</em>):</strong> sus modelos recientes son enormes en conocimiento total, pero solo activan una fracción pequeña de sus parámetros para procesar cada palabra o imagen (por ejemplo, en <code>DeepSeek-V4.1-Flash</code> hay 552B totales, pero solo se activan 8B en entrada y 16B en salida).</li>
+        <li><strong>Compresión extrema de memoria (Caché KV):</strong> reduce drásticamente el consumo de memoria intermedia (a un cuarto de HBM y un octavo de SSD respecto a la generación anterior), abaratando el coste de conversaciones largas y sesiones agénticas.</li>
+        <li><strong>Mejora continua por comunidad abierta:</strong> al liberar los modelos y <strong>DeepSeek Harness</strong> bajo licencia MIT, miles de desarrolladores crean optimizaciones, conectores y plugins que fortalecen todo el ecosistema.</li>
+      </ol>
+
+      <h3>2.2. Conceptos base imprescindibles antes de empezar</h3>
+      <ul>
+        <li><strong>Parámetro (<code>B</code> = miles de millones):</strong> cada uno de los valores numéricos internos que la red neuronal ajustó durante su entrenamiento. Cuantos más miles de millones de parámetros tiene un modelo, mayor capacidad suele tener, aunque exige más memoria RAM/VRAM.</li>
+        <li><strong>Token:</strong> unidad mínima de texto que procesa la IA (aproximadamente tres cuartos de una palabra en inglés o algo menos de una palabra en español, incluyendo signos de puntuación).</li>
+        <li><strong>Ventana de contexto de 1M:</strong> significa que el modelo puede mantener presentes hasta <strong>un millón de tokens simultáneos</strong> entre tus instrucciones, archivos adjuntos y su respuesta, con hasta <strong>384K tokens de salida máxima</strong>.</li>
+      </ul>
+
+      <h3>2.3. Mapa Completo de Modelos de DeepSeek</h3>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Familia o identificador</th>
+              <th>Versión de referencia</th>
+              <th>Capacidad principal</th>
+              <th>Tamaño y ventana de contexto</th>
+              <th>Uso recomendado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>DeepSeek Flash</strong> (<code>deepseek-flash</code>)</td>
+              <td>DeepSeek-V4.1-Flash (revisión <code>1017</code>)</td>
+              <td>Multimodal nativo (texto e imagen), rápido, tareas diarias y uso agéntico</td>
+              <td>552B totales (8B activos entrada / 16B salida), 1M contexto, 384K salida</td>
+              <td>Punto de partida principal en API, chat y agentes</td>
+            </tr>
+            <tr>
+              <td><strong>DeepSeek Pro</strong> (<code>deepseek-v4-pro</code>)</td>
+              <td>DeepSeek-V4-Pro-0813</td>
+              <td>Razonamiento profundo y tareas complejas de conocimiento (solo texto)</td>
+              <td>Contexto de 1M tokens, hasta 384K de salida máxima</td>
+              <td>Análisis profundos donde no se requiere entrada visual</td>
+            </tr>
+            <tr>
+              <td><strong>DeepSeek R1</strong> (<code>deepseek-r1</code>)</td>
+              <td>Serie R1 original (ene. 2025 y revisiones)</td>
+              <td>Razonamiento matemático, lógico y de programación paso a paso</td>
+              <td>Modelo completo masivo (671B en su versión completa)</td>
+              <td>Referente histórico y base de razonamiento abierto</td>
+            </tr>
+            <tr>
+              <td><strong>DeepSeek R1 Destilados</strong> (<code>R1 Distill</code>)</td>
+              <td>Variantes <code>1.5B</code>, <code>7B</code>, <code>8B</code>, <code>14B</code>, <code>32B</code>, <code>70B</code></td>
+              <td>Razonamiento compacto en hardware doméstico sin conexión</td>
+              <td>Desde ~1,1 GB hasta decenas de GB según versión</td>
+              <td>Ejecución 100% local y privada en PC o Mac</td>
+            </tr>
+            <tr>
+              <td><strong>Modelos especializados</strong></td>
+              <td>OCR y herramientas de aplicación</td>
+              <td>Reconocimiento óptico de texto en documentos e integraciones</td>
+              <td>Variables según tarea específica</td>
+              <td>Extracción de texto de imágenes y flujos concretos</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>2.4. Diferencia entre usar DeepSeek en Chat Web, App Móvil, API y DeepSeek Harness</h3>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Herramienta</th>
+              <th>Coste habitual</th>
+              <th>Nivel requerido</th>
+              <th>Qué puedes hacer exactamente</th>
+              <th>Limitación principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Chat Web oficial</strong></td>
+              <td>Gratis (sin suscripción)</td>
+              <td>Cero (solo navegador)</td>
+              <td>Conversar, razonar, generar código y previsualizar mini apps con el botón <code>Run</code></td>
+              <td>No gestiona carpetas de tu disco duro ni instala plugins</td>
+            </tr>
+            <tr>
+              <td><strong>App Móvil oficial</strong></td>
+              <td>Gratis (iOS y Android)</td>
+              <td>Cero (solo smartphone)</td>
+              <td>Consultar sobre la marcha y dictar prompts con la voz</td>
+              <td>No funciona como agente autónomo de escritorio</td>
+            </tr>
+            <tr>
+              <td><strong>DeepSeek Harness (<code>dsh</code>)</strong></td>
+              <td>Gratis el programa; modelos gratis vía terceros/local o API de bajo coste</td>
+              <td>Principiante guiado a PRO</td>
+              <td>Agente sobre tus carpetas, creación de PDFs/presentaciones, plugins y automatizaciones</td>
+              <td>No trae incluido gratis por defecto el chat web; requiere conectar API, proveedor gratuito o modelo local</td>
+            </tr>
+            <tr>
+              <td><strong>Ollama + Modelos locales</strong></td>
+              <td>100% gratis e ilimitado</td>
+              <td>Intermedio a PRO</td>
+              <td>Privacidad absoluta sin internet, ejecución ilimitada en tu equipo</td>
+              <td>Limitado por la memoria RAM/VRAM de tu ordenador</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pedagogy-box purpose">
+        <h4>REGLA DE ORO PARA EMPEZAR</h4>
+        <p>Si buscas respuestas rápidas o crear pequeñas utilidades visuales en pantalla, usa el <strong>Chat Web oficial</strong>. Cuando quieras que la IA trabaje directamente con archivos reales de tu ordenador o automatice tareas complejas, da el salto a <strong>DeepSeek Harness</strong>.</p>
+      </div>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 2: CHAT WEB Y APP MÓVIL -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-2" data-t="Chat Web y App Móvil">
+    <div class="card">
+      <h2>3. Nivel Inicial: Uso Gratuito en la Nube (Chat Web y Aplicación Móvil)</h2>
+      <p>En este primer nivel práctico no necesitas instalar programas complejos ni configurar claves técnicas. Todo ocurre dentro de la plataforma oficial gratuita en la nube.</p>
+
+      <h3>3.1. Procedimiento 1: Crear tu cuenta gratuita en el Chat Web oficial</h3>
+      <p><strong>Objetivo:</strong> Acceder al motor principal de DeepSeek sin pagar suscripciones mensuales.<br>
+      <strong>Requisitos previos:</strong> Un navegador web actualizado (Chrome, Edge, Safari o Firefox), conexión a internet y un correo electrónico.</p>
+
+      <div class="url-card">
+        <span class="url-text">https://chat.deepseek.com/</span>
+        <div class="url-actions">
+          <a href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://chat.deepseek.com/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <ol class="step-list">
+        <li class="step-item">
+          <span class="step-num">1</span>
+          <div><strong>Accede al portal del chat:</strong> Abre tu navegador y entra en <code>https://chat.deepseek.com/</code>. <em>Motivo:</em> utilizar exclusivamente el dominio legítimo gratuito de DeepSeek.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">2</span>
+          <div><strong>Inicia el registro:</strong> Pulsa en <strong>Sign up</strong> (o <strong>Registrarse</strong>) e introduce tu dirección de correo electrónico o usa un método de acceso directo en pantalla.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">3</span>
+          <div><strong>Verifica tu identidad:</strong> Introduce el código de verificación enviado a tu bandeja de correo y define una contraseña segura.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">4</span>
+          <div><strong>Resultado esperado (Verificación):</strong> Verás una interfaz limpia con un cuadro de texto central en la parte inferior, un botón para activar el razonamiento paso a paso y ningún muro de pago.</div>
+        </li>
+      </ol>
+
+      <h3>3.2. Anatomía del Prompt Perfecto y el Botón de Pensamiento</h3>
+      <p>Un <strong>prompt</strong> es la instrucción o pregunta que escribes para guiar a la IA. Para lograr respuestas de calidad profesional desde el primer intento, incluye siempre tres piezas: <strong>1) qué quieres construir o resolver</strong>, <strong>2) qué datos o variables debe considerar</strong> y <strong>3) en qué formato exacto quieres la salida</strong>.</p>
+
+      <h3>3.3. Caso Práctico 1: Crear y ejecutar una mini aplicación financiera en el navegador (Botón <code>Run</code>)</h3>
+      <p><strong>Objetivo:</strong> Crear una calculadora de coste de reuniones empresariales con cronómetro en vivo y ejecutarla dentro del navegador usando el botón <code>Run</code> de DeepSeek, sin instalar editores de código.</p>
+
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt Caso Práctico 1 — Calculadora de Coste de Reuniones</span>
+          <button type="button" class="btn-copy" data-copy-target="prompt-reuniones-1">📋 COPIAR PROMPT</button>
+        </div>
+        <div class="copy-content" id="prompt-reuniones-1">Crea una mini aplicación web interactiva en un único archivo HTML con CSS y JavaScript para demostrar a las empresas cuánto les está costando cada reunión. Debe permitir introducir el número de asistentes, el coste por hora medio por persona (en euros) y la duración aproximada en horas. Además, debe mostrar el cálculo total de forma clara e incluir un cronómetro con botón Play/Pausa para ver en tiempo real cuánto dinero se está gastando minuto a minuto mientras avanza la reunión.</div>
+      </div>
+
+      <ol class="step-list">
+        <li class="step-item">
+          <span class="step-num">1</span>
+          <div><strong>Envía la instrucción:</strong> Abre un chat nuevo en <code>https://chat.deepseek.com/</code>, pega el prompt anterior y pulsa el botón de <strong>Enviar</strong>.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">2</span>
+          <div><strong>Observa el razonamiento (~1 minuto):</strong> Primero verás desplegarse el bloque de pensamiento donde el modelo estructura las fórmulas matemáticas y el diseño, y debajo escribirá el código HTML/CSS/JS completo.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">3</span>
+          <div><strong>Pulsa el botón <code>Run</code>:</strong> En la esquina superior derecha del bloque de código generado, haz clic en <strong>Run</strong> (Ejecutar) para abrir el panel interactivo dentro del propio navegador.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">4</span>
+          <div><strong>Comprueba los datos exactos del vídeo:</strong> Introduce <strong>7 asistentes</strong>, coste por hora de <strong>75 €</strong> y duración de <strong>1 hora</strong>. Verifica que el resultado total sea exactamente <strong>525 €</strong> y pulsa <strong>Play</strong> para ver avanzar el gasto segundo a segundo.</div>
+        </li>
+      </ol>
+
+      <!-- SIMULADOR INTERACTIVO FUNCIONAL EN EL PROPIO TUTORIAL -->
+      <div class="card" style="border-color:var(--accent-emerald);">
+        <h4>⚡ Laboratorio Interactivo en Vivo: Prueba aquí mismo el Caso Práctico 1 (`Run`)</h4>
+        <p>Para que compruebes ahora mismo lo que genera DeepSeek con ese prompt, hemos integrado aquí la mini aplicación funcional con los valores del tutorial (7 asistentes × 75 €/h × 1 h = 525 €):</p>
+        <div class="sim-grid">
+          <div class="sim-field">
+            <label for="sim-attendees">Nº de Asistentes</label>
+            <input type="number" id="sim-attendees" value="7" min="1">
+          </div>
+          <div class="sim-field">
+            <label for="sim-hourly">Coste / Hora (€)</label>
+            <input type="number" id="sim-hourly" value="75" min="1">
+          </div>
+          <div class="sim-field">
+            <label for="sim-duration">Duración (Horas)</label>
+            <input type="number" id="sim-duration" value="1" min="0.25" step="0.25">
+          </div>
+        </div>
+        <div class="sim-result-banner">
+          <div style="font-size:0.9rem;color:var(--text-secondary);">Coste Total Estimado de la Reunión:</div>
+          <div id="sim-total-display" style="font-size:1.7rem;font-weight:900;color:var(--accent-emerald);">525.00 €</div>
+          <div style="margin-top:8px;font-family:monospace;font-size:1rem;">
+            Tiempo activo: <span id="sim-timer-clock">00:00:00</span> | Gasto en tiempo real: <strong id="sim-live-cost" style="color:var(--accent-primary);">0.00 €</strong>
+          </div>
+          <div style="margin-top:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+            <button type="button" class="btn-tool" id="btn-sim-play" style="border-color:var(--accent-emerald);color:var(--accent-emerald);">▶ Play / Pausa</button>
+            <button type="button" class="btn-tool" id="btn-sim-reset">↺ Reiniciar</button>
+          </div>
+        </div>
+      </div>
+
+      <h3>3.4. Instalación y uso de la Aplicación Móvil Oficial (iOS y Android) + Dictado por Voz</h3>
+      <p>Evita descargar aplicaciones falsas con nombres parecidos que cobran suscripciones semanales. Utiliza siempre el portal oficial de descargas o busca el desarrollador verificado <strong>DeepSeek</strong> en App Store o Google Play Store:</p>
+
+      <div class="url-card">
+        <span class="url-text">https://www.deepseek.com/en/download/</span>
+        <div class="url-actions">
+          <a href="https://www.deepseek.com/en/download/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://www.deepseek.com/en/download/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <ol class="step-list">
+        <li class="step-item">
+          <span class="step-num">1</span>
+          <div><strong>Instala y sincroniza:</strong> Descarga la app gratuita oficial e inicia sesión con la misma cuenta del Chat Web para tener tus conversaciones sincronizadas en ambos dispositivos.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">2</span>
+          <div><strong>Usa el dictado por voz:</strong> Dentro de un chat móvil, localiza el icono de <strong>micrófono / dictado</strong> junto al cuadro de escritura.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">3</span>
+          <div><strong>Mantén pulsado y habla:</strong> Mantén presionado el botón mientras hablas con naturalidad y <strong>suéltalo al terminar la frase</strong>. La app transcribirá tus palabras automáticamente y enviará la consulta.</div>
+        </li>
+      </ol>
+
+      <div class="pedagogy-box warning">
+        <h4>LÍMITE REAL DE LA VERSIÓN WEB Y MÓVIL</h4>
+        <p>Tanto el Chat Web como la App Móvil operan en modo conversacional en la nube: no pueden entrar en las carpetas de tu ordenador, ni organizar archivos locales, ni instalar plugins. Para desbloquear ese poder agéntico, pasa a la siguiente pestaña: <strong>DeepSeek Harness</strong>.</p>
+      </div>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 3: DEEPSEEK HARNESS -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-3" data-t="DeepSeek Harness">
+    <div class="card">
+      <h2>4. Nivel Intermedio: DeepSeek Harness (<code>dsh</code>) en Escritorio y Navegador</h2>
+
+      <div class="pedagogy-grid">
+        <div class="pedagogy-box">
+          <h4>¿QUÉ ES UN HARNESS?</h4>
+          <p>Un modelo de IA suelto es como un motor potente sobre una mesa: responde si le hablas, pero no tiene manos para leer carpetas ni crear archivos. Un <strong>harness</strong> (arnés o entorno agéntico) es la carrocería, el volante y las herramientas que convierten al modelo en un <strong>agente capaz de actuar</strong>.</p>
+        </div>
+        <div class="pedagogy-box purpose">
+          <h4>ARQUITECTURA CORDIS</h4>
+          <p><strong>DeepSeek Harness (<code>dsh</code>)</strong> es de código abierto (licencia MIT, actualmente en <em>public/developer preview</em>) y se basa en el marco <strong>Cordis</strong> bajo la filosofía <strong>«todo es un plugin»</strong> (<em>Everything is a Plugin</em>): modelos, terminal, archivos e interfaz son módulos intercambiables.</p>
+        </div>
+        <div class="pedagogy-box importance">
+          <h4>COMPARATIVA DE ÉLITE</h4>
+          <p>Compite directamente con Claude Code, Codex, OpenCode o Hermes, pero permite conectarle cualquier proveedor gratuito, API económica o modelo local de Ollama y reprogramar la propia aplicación desde el chat.</p>
+        </div>
+      </div>
+
+      <h3>4.1. Instalación de DeepSeek Harness en Windows y macOS (Método Gráfico)</h3>
+      <div class="url-card">
+        <span class="url-text">https://www.deepseek.com/en/harness/</span>
+        <div class="url-actions">
+          <a href="https://www.deepseek.com/en/harness/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://www.deepseek.com/en/harness/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <ol class="step-list">
+        <li class="step-item">
+          <span class="step-num">1</span>
+          <div><strong>Descarga el instalador:</strong> Entra en <code>https://www.deepseek.com/en/download/</code> o <code>https://www.deepseek.com/en/harness/</code> y pulsa <strong>Download Desktop</strong>. Elige <strong>macOS (Apple silicon, macOS 13 o posterior)</strong> o <strong>Windows (64-bit)</strong>.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">2</span>
+          <div><strong>Instala la aplicación:</strong> En Windows ejecuta el instalador <code>.exe</code> y sigue el asistente; en macOS abre el archivo <code>.dmg</code> y arrastra el icono a la carpeta <strong>Aplicaciones</strong>.</div>
+        </li>
+      </ol>
+
+      <h3>4.2. Instalación Alternativa por Consola y Navegador Web (<code>npx @deepseek-ai/dsh web</code>)</h3>
+      <p>Si usas Linux o prefieres abrir DeepSeek Harness como aplicación web en tu navegador local (requiere tener instalado <strong>Node.js</strong> versión <code>^22.19.0</code> o <code>&gt;=24.0.0</code>):</p>
+
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Comando Terminal / PowerShell — Lanzar DeepSeek Harness Web UI</span>
+          <button type="button" class="btn-copy" data-copy-target="cmd-dsh-web">📋 COPIAR COMANDO</button>
+        </div>
+        <div class="copy-content" id="cmd-dsh-web">npx @deepseek-ai/dsh web</div>
+      </div>
+      <p>Al ejecutarlo, levantará el servidor local en <code>http://localhost:3080</code> (puerto <code>3080</code>) y abrirá automáticamente tu navegador (añade <code>--no-open</code> al final si trabajas en un servidor remoto sin navegador).</p>
+
+      <h3>4.3. Configuración Inicial Crítica: Omitir Saldo y Desbloquear el Cuadro de Chat</h3>
+      <div class="pedagogy-box warning">
+        <h4>¡ATENCIÓN A ESTOS DOS DETALLES AL ABRIRLO POR PRIMERA VEZ!</h4>
+        <ol>
+          <li><strong>Omitir la pantalla de saldo inicial:</strong> el asistente inicial sugiere recargar crédito de API. <strong>Pulsa Omitir / Saltar</strong>, porque podrás usar proveedores gratuitos (OpenCode/OpenRouter) o modelos locales (Ollama).</li>
+          <li><strong>Seleccionar un Workspace obligatorio (si el chat sale gris):</strong> si no puedes escribir en el cuadro de texto, no es un fallo. Crea una carpeta de prueba (por ejemplo, <code>practicas-deepseek</code>), haz clic en <strong>Seleccionar Workspace</strong> y elígela. El cuadro de escritura se activará al instante.</li>
+        </ol>
+      </div>
+
+      <h3>4.4. Los Cuatro Modos de Trabajo en DeepSeek Harness</h3>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Modo</th>
+              <th>Propósito principal</th>
+              <th>Cómo funciona internamente</th>
+              <th>Cuándo debes elegirlo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Estándar</strong> (<code>Standard</code>)</td>
+              <td>Uso cotidiano general y programación fiable</td>
+              <td>Expone al agente el conjunto completo de herramientas de lectura, edición y comandos paso a paso</td>
+              <td>Siempre que empieces una tarea normal, redacción de documentos o proyectos cotidianos</td>
+            </tr>
+            <tr>
+              <td><strong>PTC</strong> (<code>Programmatic Tool Calling</code> / Code)</td>
+              <td>Tareas masivas o repetitivas con ahorro de tokens</td>
+              <td>En lugar de llamar a una herramienta cada vez, el agente escribe un pequeño programa para ejecutar múltiples llamadas en bloque</td>
+              <td>Procesamiento masivo de archivos; ten presente que modelos pequeños pueden fallar al encadenar llamadas</td>
+            </tr>
+            <tr>
+              <td><strong>Mínimo</strong> (<code>Minimal</code>)</td>
+              <td>Pruebas limpias y medición pura del modelo</td>
+              <td>Reduce las ayudas del entorno y fuerza al agente a operar principalmente con terminal y edición básica</td>
+              <td>Evaluar el rendimiento real de un modelo sin capas extra de automatización</td>
+            </tr>
+            <tr>
+              <td><strong>Creador</strong> (<code>Creator</code>)</td>
+              <td>Ampliar y rediseñar el propio DeepSeek Harness</td>
+              <td>Carga la habilidad de desarrollo de plugins Cordis para escribir, instalar y verificar complementos desde el chat</td>
+              <td>Cuando quieras añadir funciones nuevas, contadores o cambiar la apariencia de la app</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>4.5. Los Cuatro Niveles de Permisos sobre tus Carpetas</h3>
+      <ul>
+        <li><strong>1. Solo lectura (<em>Read-only</em>):</strong> el agente lee archivos para informarse o resumir, pero tiene <strong>prohibido modificar, mover o borrar</strong> nada. Obligatorio al analizar documentos delicados.</li>
+        <li><strong>2. Ejecutar cambios (<em>Ask / Approval</em>):</strong> cada vez que el agente quiera crear, editar o borrar un archivo o lanzar un comando, se detiene y te muestra una tarjeta para aprobarlo clic a clic.</li>
+        <li><strong>3. Acceso completo (<em>Full access / Write</em>):</strong> el agente crea, edita y organiza archivos sin interrumpirte. Úsalo solo en carpetas de trabajo dedicadas o con copia de seguridad.</li>
+        <li><strong>4. Autoiteración (Beta):</strong> el agente ejecuta la tarea, se revisa a sí mismo, detecta mejoras o fallos y refina el resultado antes de entregártelo.</li>
+      </ul>
+
+      <h3>4.6. Caso Práctico 2: Crear una presentación 16:9 (8 diapositivas) y un PDF descargable</h3>
+      <p>Una vez conectado un modelo (como <strong>DeepSeek 4.1 Flash (free)</strong> vía OpenCode que veremos en la siguiente pestaña), selecciona tu carpeta Workspace, pon modo <strong>Estándar</strong> y permiso <strong>Ejecutar cambios</strong> o <strong>Acceso completo</strong>, y envía este prompt:</p>
+
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt Caso Práctico 2 — Presentación 16:9 + PDF sobre Fraudes con IA</span>
+          <button type="button" class="btn-copy" data-copy-target="prompt-presentacion-2">📋 COPIAR PROMPT</button>
+        </div>
+        <div class="copy-content" id="prompt-presentacion-2">Crea una presentación visual sobre los seis fraudes y engaños digitales más habituales con inteligencia artificial y cómo podemos protegernos de ellos. Incluye exactamente ocho diapositivas en formato panorámico 16:9 con todos los puntos clave bien estructurados y estadísticas reales verificadas. Genera también una versión en PDF descargable dentro de la carpeta del proyecto.</div>
+      </div>
+
+      <p><strong>Resultado esperado:</strong> Tras unos <strong>7 minutos</strong> de investigación y maquetación autónoma, podrás previsualizar las 8 diapositivas en formato 16:9 directamente dentro de DeepSeek Harness y abrir o descargar el archivo PDF generado en tu carpeta.</p>
+
+      <h3>4.7. Auditoría Total: Vista de Trayectoria y Panel de Uso de Modelos</h3>
+      <ul>
+        <li><strong>Botón Trayectoria (<em>Trace</em>):</strong> al pulsarlo en cualquier sesión, despliega la línea de tiempo exacta con qué orden recibió el modelo, qué herramientas llamó, qué archivos leyó, qué comandos ejecutó y cuánto tardó cada paso.</li>
+        <li><strong>Panel Uso de Modelos (<em>Model usage</em>):</strong> en barra lateral izquierda &rarr; <strong>+ / Configuración &rarr; Uso de modelos</strong>, verás el desglose exacto de tokens consumidos y gasto económico separado por cada proveedor (OpenCode gratis, API oficial de DeepSeek, etc.).</li>
+      </ul>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 4: APIS Y PLUGINS -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-4" data-t="APIs y Plugins">
+    <div class="card">
+      <h2>5. Nivel Avanzado: APIs Oficiales, Proveedores Gratuitos, Complementos y Modo Creador</h2>
+
+      <h3>5.1. Qué es una API y una API Key</h3>
+      <p>Una <strong>API</strong> (<em>Application Programming Interface</em>) es un puente de comunicación directa entre programas para que DeepSeek Harness se conecte con los servidores del modelo. Una <strong>API Key</strong> es tu llave privada alfanumérica personal: <strong>nunca la compartas en capturas, vídeos ni repositorios públicos</strong>.</p>
+
+      <h3>5.2. Tarifas Oficiales de la API de DeepSeek (Peak vs Off-Peak y Caché KV)</h3>
+      <p>La documentación oficial (<code>api-docs.deepseek.com</code>) divide el día en <strong>Horas Punta (<em>Peak</em>)</strong> —lunes a viernes de <code>01:00–04:00 UTC</code> y <code>06:00–10:00 UTC</code>, excluyendo festivos oficiales en China— y <strong>Horas Valle (<em>Off-Peak</em>)</strong> —el resto del día, fines de semana completos y festivos chinos—, donde todo cuesta un <strong>50% menos</strong>. Precios oficiales en USD por cada millón de tokens:</p>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Modelo oficial API</th>
+              <th>Periodo horario</th>
+              <th>Entrada (Cache Hit)</th>
+              <th>Entrada (Cache Miss)</th>
+              <th>Salida (Output)</th>
+              <th>Concurrencia máxima</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong><code>deepseek-flash</code></strong> (DeepSeek-V4.1-Flash-1017)</td>
+              <td><strong>Horas Valle (Off-Peak)</strong></td>
+              <td><strong>$0.003</strong></td>
+              <td>$0.15</td>
+              <td>$0.60</td>
+              <td>2.500</td>
+            </tr>
+            <tr>
+              <td><strong><code>deepseek-flash</code></strong> (DeepSeek-V4.1-Flash-1017)</td>
+              <td><strong>Horas Punta (Peak)</strong></td>
+              <td>$0.006</td>
+              <td>$0.30</td>
+              <td>$1.20</td>
+              <td>2.500</td>
+            </tr>
+            <tr>
+              <td><strong><code>deepseek-v4-pro</code></strong> (DeepSeek-V4-Pro-0813)</td>
+              <td><strong>Horas Valle (Off-Peak)</strong></td>
+              <td>$0.022</td>
+              <td>$0.66</td>
+              <td>$1.98</td>
+              <td>500</td>
+            </tr>
+            <tr>
+              <td><strong><code>deepseek-v4-pro</code></strong> (DeepSeek-V4-Pro-0813)</td>
+              <td><strong>Horas Punta (Peak)</strong></td>
+              <td>$0.044</td>
+              <td>$1.32</td>
+              <td>$3.96</td>
+              <td>500</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Gracias al <strong>Cache Hit ($0.003 por millón de tokens)</strong>, cuando el agente trabaja sobre los mismos archivos en una sesión larga, reutiliza la caché KV comprimida y cobra hasta 50 veces menos. Una recarga mínima de <strong>$5 USD</strong> en <code>https://platform.deepseek.com/</code> rinde para semanas o meses de uso personal.</p>
+
+      <div class="url-card">
+        <span class="url-text">https://platform.deepseek.com/</span>
+        <div class="url-actions">
+          <a href="https://platform.deepseek.com/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://platform.deepseek.com/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <h3>5.3. Compatibilidad Programática Oficial (OpenAI SDK y Anthropic SDK)</h3>
+      <p>La API oficial de DeepSeek es directamente compatible con el estándar de <strong>OpenAI</strong> (URL base: <code>https://api.deepseek.com</code>) y con el formato de <strong>Anthropic</strong> (URL base: <code>https://api.deepseek.com/anthropic</code>) configurando la variable de entorno <code>DEEPSEEK_API_KEY</code>.</p>
+
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Ejemplo Python Oficial (OpenAI SDK con Razonamiento)</span>
+          <button type="button" class="btn-copy" data-copy-target="code-py-sdk">📋 COPIAR CÓDIGO</button>
+        </div>
+        <div class="copy-content" id="code-py-sdk">import os
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=os.environ.get("DEEPSEEK_API_KEY"),
+    base_url="https://api.deepseek.com"
+)
+
+response = client.chat.completions.create(
+    model="deepseek-flash",
+    messages=[{"role": "user", "content": "¿Me recibes? Confirma conexión."}],
+    extra_body={"thinking": {"type": "enabled"}, "reasoning_effort": "high"}
+)
+print(response.choices[0].message.content)</div>
+      </div>
+
+      <h3>5.4. Los 4 Proveedores Gratuitos o Alternativos en DeepSeek Harness</h3>
+      <ol>
+        <li><strong>OpenCode (<code>https://opencode.ai/</code>):</strong> ofrece el modelo gratuito <strong><code>DeepSeek V4.1 Flash Free</code></strong> (<code>opencode/deepseek-v4.1-flash-free</code>) con política de cero retención de datos según su documentación oficial (no entrena con tus prompts gratuitos, sujeto a límites de disponibilidad).</li>
+        <li><strong>OpenRouter (<code>https://openrouter.ai/</code>):</strong> distribuidor unificado. Creas cuenta gratis, copias tu API Key, añades el proveedor OpenRouter en DeepSeek Harness y escribes <code>free</code> en el buscador de modelos para usar todos los gratuitos.</li>
+        <li><strong>Nvidia NIM (<code>https://developer.nvidia.com/nim</code>):</strong> créditos y acceso gratuito de prueba para desarrolladores con inferencia de alta velocidad (incluido DeepSeek-V4.1-Flash).</li>
+        <li><strong>Suscripciones existentes (ChatGPT / Codex):</strong> mediante plugins comunitarios de GitHub puedes conectar tu suscripción existente de Codex dentro de DeepSeek Harness.</li>
+      </ol>
+
+      <h3>5.5. Instalar Complementos (Plugins) y usar el Modo Creador</h3>
+      <p>En la pestaña lateral <strong>Complementos (Plugins)</strong> puedes activar con un interruptor los plugins oficiales (equipos de agentes, revisión de aprobaciones, tareas programadas, voz o terminal) o pulsar <strong>Añadir complemento (Add plugin)</strong> pegando la URL de un repositorio de GitHub (o usando el catálogo <code>awesome-dsh-plugin</code> en versiones <code>0.2.1+</code>, o por terminal con <code>dsh plugin --profile web add &lt;paquete&gt;</code>).</p>
+
+      <h4>Los 6 Ejemplos Reales Construidos en Modo Creador (Sin Programar a Mano)</h4>
+      <p>Al pulsar <strong>Complementos &rarr; + &rarr; Crear tu propio complemento</strong> (o elegir el modo <strong>Creador</strong>), el agente programa, instala y verifica nuevas funciones en vivo:</p>
+      <ul>
+        <li><strong>1. Contador de tiempo por tarea:</strong> cronometra cuánto tarda exactamente cada petición.</li>
+        <li><strong>2. Monitor de gasto de tokens y coste:</strong> panel visual de consumo acumulado por proveedor.</li>
+        <li><strong>3. Rediseño total de interfaz y cambio de nombre:</strong> personalización completa de colores, paneles y renombrado de la ventana de la app (en el vídeo demostrada como <strong><em>alejadnes</em></strong>).</li>
+        <li><strong>4. Aplicaciones interactivas en 3D:</strong> globo terráqueo interactivo en 3D rotable dentro de la propia aplicación.</li>
+        <li><strong>5. Temporizador Pomodoro flotante:</strong> ventana flotante con modos <em>Focus</em> (25:00) y descanso corto.</li>
+        <li><strong>6. Automatizaciones programadas (<code>schedule_create</code>):</strong> pedir en español normal tareas periódicas como <em>«Todos los viernes a las 17:00 resume las notas del proyecto de esta semana en un informe semanal»</em>.</li>
+      </ul>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 5: IA LOCAL CON OLLAMA -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-5" data-t="IA Local con Ollama">
+    <div class="card">
+      <h2>6. Nivel Profesional Local: Ejecución 100% Privada, Gratuita y Offline</h2>
+
+      <div class="pedagogy-grid">
+        <div class="pedagogy-box">
+          <h4>¿QUÉ ES EJECUTAR EN LOCAL?</h4>
+          <p>Descargar el modelo a tu disco duro para que los cálculos ocurran dentro de los chips de tu ordenador. Puedes apagar el Wi-Fi y trabajar con contratos, datos médicos o código privado sin que salga un solo byte a internet.</p>
+        </div>
+        <div class="pedagogy-box purpose">
+          <h4>MODELOS R1 DESTILADOS</h4>
+          <p>Los modelos gigantes de la nube (552B o 671B) requieren cientos de GB de memoria. Para ordenadores domésticos usamos las variantes <strong>DeepSeek-R1 Distill</strong> (<code>1.5B</code>, <code>7B</code>, <code>8B</code>, <code>14B</code>, <code>32B</code>, <code>70B</code>) comprimidas mediante <strong>cuantización</strong> (<code>Q4</code>, <code>Q8</code>).</p>
+        </div>
+        <div class="pedagogy-box importance">
+          <h4>REGLA DE HARDWARE</h4>
+          <p>La <strong>VRAM</strong> (memoria de la tarjeta gráfica en PC) o la <strong>memoria unificada</strong> (en chips Apple Silicon M1/M2/M3/M4/M5) determina qué tamaño de modelo corre fluido sin bloquear tu equipo.</p>
+        </div>
+      </div>
+
+      <h3>6.1. Paso Previo Imprescindible: Analizar tu Hardware con CanIRun.ai y CanItRun.dev</h3>
+      <p>Antes de descargar gigabytes a ciegas, entra en cualquiera de estas dos herramientas verificadoras (analizan tu navegador localmente mediante WebGL/WebGPU):</p>
+
+      <div class="url-card">
+        <span class="url-text">https://canirun.ai/</span>
+        <div class="url-actions">
+          <a href="https://canirun.ai/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://canirun.ai/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <span class="url-text">https://canitrun.dev/</span>
+        <div class="url-actions">
+          <a href="https://canitrun.dev/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://canitrun.dev/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <p><strong>Ejemplo real del vídeo:</strong> En un <strong>Apple M3 Pro con 18 GB de memoria</strong>, el equipo soporta modelos de hasta <strong>14B</strong> parámetros, por lo que elegir el modelo de <strong><code>8B</code> (`deepseek-r1:8b`)</strong> garantiza fluidez total dejando memoria libre para el sistema operativo.</p>
+      <ul>
+        <li><strong>Equipos con 8 GB de RAM/VRAM:</strong> elige <code>deepseek-r1:1.5b</code> o <code>deepseek-r1:7b</code>.</li>
+        <li><strong>Equipos con 16 GB a 18 GB de RAM/VRAM:</strong> elige <code>deepseek-r1:8b</code> (recomendado en el tutorial) o <code>deepseek-r1:14b</code>.</li>
+        <li><strong>Equipos con 32 GB+ de RAM/VRAM:</strong> puedes elegir <code>deepseek-r1:32b</code>.</li>
+      </ul>
+
+      <h3>6.2. Instalación de Ollama y Descarga de DeepSeek R1 (`ollama pull`)</h3>
+      <div class="url-card">
+        <span class="url-text">https://ollama.com/</span>
+        <div class="url-actions">
+          <a href="https://ollama.com/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://ollama.com/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <ol class="step-list">
+        <li class="step-item">
+          <span class="step-num">1</span>
+          <div><strong>Instala Ollama:</strong> Descarga el instalador desde <code>https://ollama.com/</code> para macOS, Windows o Linux y ábrelo para que su icono quede activo en segundo plano.</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">2</span>
+          <div><strong>Descarga el modelo por terminal:</strong> Abre Terminal o PowerShell y ejecuta el comando de descarga:</div>
+        </li>
+      </ol>
+
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Comando Terminal — Descargar DeepSeek R1 8B en Ollama</span>
+          <button type="button" class="btn-copy" data-copy-target="cmd-ollama-pull">📋 COPIAR COMANDO</button>
+        </div>
+        <div class="copy-content" id="cmd-ollama-pull">ollama pull deepseek-r1:8b</div>
+      </div>
+
+      <p>Cuando alcance el <code>100%</code> y muestre <code>success</code>, apaga tu Wi-Fi si deseas comprobar la privacidad absoluta, abre Ollama (o ejecuta <code>ollama run deepseek-r1:8b</code>) y envía el mensaje de prueba literal: <strong><code>Hola ¿cómo estás?</code></strong>.</p>
+
+      <h3>6.3. Los Dos Métodos para Conectar Ollama con DeepSeek Harness</h3>
+
+      <h4>Método A: Lanzamiento automático oficial desde terminal (`ollama launch dsh`)</h4>
+      <p>Disponible desde Ollama v0.32.11. Configura un perfil dedicado en <code>~/.ollama/launch/dsh/settings.yaml</code> sin sobrescribir tus ajustes personales de <code>~/.dsh/settings.yaml</code>:</p>
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Comando Oficial — Lanzar DeepSeek Harness con Ollama</span>
+          <button type="button" class="btn-copy" data-copy-target="cmd-ollama-launch">📋 COPIAR COMANDO</button>
+        </div>
+        <div class="copy-content" id="cmd-ollama-launch">ollama launch dsh --model deepseek-r1:8b</div>
+      </div>
+
+      <h4>Método B: Conexión manual como proveedor personalizado en la interfaz gráfica (Paso a Paso del Vídeo)</h4>
+      <ol class="step-list">
+        <li class="step-item">
+          <span class="step-num">1</span>
+          <div>En DeepSeek Harness, entra en la barra lateral izquierda: <strong>+ &rarr; Configuración &rarr; Modelos &rarr; Añadir proveedor personalizado</strong> (<em>Add custom provider</em>).</div>
+        </li>
+        <li class="step-item">
+          <span class="step-num">2</span>
+          <div>Escribe como <strong>Nombre del proveedor:</strong> <code>Ollama</code> y pega en <strong>URL (Endpoint)</strong> exactamente la dirección local estándar:</div>
+        </li>
+      </ol>
+
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Endpoint Local Estándar de Ollama (Compatible OpenAI)</span>
+          <button type="button" class="btn-copy" data-copy-target="cmd-ollama-url">📋 COPIAR ENDPOINT</button>
+        </div>
+        <div class="copy-content" id="cmd-ollama-url">http://localhost:11434/v1</div>
+      </div>
+
+      <ol class="step-list" start="3">
+        <li class="step-item">
+          <span class="step-num">3</span>
+          <div>Deja el campo <strong>API Key</strong> vacío (o escribe <code>ollama</code> si pide texto), pulsa <strong>Buscar modelos disponibles</strong>, marca las casillas de tus modelos (ej. <code>deepseek-r1:8b</code>), pulsa <strong>Lista de actualización</strong> y finalmente <strong>Crear proveedor</strong>.</div>
+        </li>
+      </ol>
+
+      <h3>6.4. Alternativas Locales Recomendadas: Jan y LM Studio</h3>
+      <p>Además de Ollama, puedes ejecutar modelos locales con interfaz visual completa mediante <strong>Jan</strong> (<code>https://www.jan.ai/</code>) o <strong>LM Studio</strong> (<code>https://lmstudio.ai/</code>), ambos gratuitos y capaces de levantar un servidor local compatible con DeepSeek Harness.</p>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 6: MODELOS SIN FILTROS Y PRIVACIDAD -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-6" data-t="Modelos Sin Filtros y Privacidad">
+    <div class="card">
+      <h2>7. Nivel Profesional Avanzado: Modelos Comunitarios de Pesos Modificados y Privacidad Digital</h2>
+
+      <h3>7.1. Qué es la Abliteración (Eliminación de Rechazos en Pesos Abiertos)</h3>
+      <p>Los modelos comerciales estándar incluyen filtros que a veces generan «falsos negativos» o rechazos automáticos ante consultas históricas legítimas, auditorías de tus propios sistemas o dudas médicas privadas. Es fundamental distinguir dos conceptos:</p>
+      <ul>
+        <li><strong>Trucos de prompt en modelos cerrados:</strong> intentar redactar juegos de rol para confundir a un chat en la nube. El modelo sigue intacto en el servidor.</li>
+        <li><strong>Abliteración (<em>Abliteration</em>) en modelos de pesos abiertos:</strong> modificación matemática directa sobre los <strong>pesos internos</strong> de un modelo abierto para identificar y atenuar la dirección neuronal que dispara el rechazo automático, permitiendo responder consultas técnicas o académicas válidas sin bloqueos artificiales.</li>
+      </ul>
+
+      <h3>7.2. Cuatro Casos de Uso Legítimos y Responsables</h3>
+      <div class="pedagogy-grid">
+        <div class="pedagogy-box">
+          <h4>1. INVESTIGACIÓN HISTÓRICA Y POLÍTICA</h4>
+          <p>Analizar de forma objetiva conflictos históricos, geopolítica o debates académicos sensibles donde los chats comerciales devuelven negativas automáticas.</p>
+        </div>
+        <div class="pedagogy-box purpose">
+          <h4>2. ARQUITECTURA DE SOFTWARE PROPIO</h4>
+          <p>Estudiar cómo funciona internamente una aplicación propia o expresamente autorizada para aprender y diseñar alternativas limpias desde cero.</p>
+        </div>
+        <div class="pedagogy-box importance">
+          <h4>3. AUDITORÍA DEFENSIVA PROPIA</h4>
+          <p>Revisar configuraciones, registros y posibles debilidades dentro de <strong>tus propios servidores y sistemas</strong> para endurecer su seguridad.</p>
+        </div>
+        <div class="pedagogy-box warning">
+          <h4>4. CONSULTAS PRIVADAS Y SALUD OFFLINE</h4>
+          <p>Analizar en local contratos confidenciales o preparar dudas médicas personales antes de acudir al especialista sin que ningún servidor externo almacene tus datos.</p>
+        </div>
+      </div>
+
+      <h3>7.3. Nube Privada (Abliteration.ai) frente a Descarga Local en Hugging Face</h3>
+      <ul>
+        <li><strong>En la nube privada (si tu PC tiene poca memoria):</strong> plataformas como <strong>Abliteration.ai</strong> (<code>https://abliteration.ai/</code>) permiten usar estos modelos vía API de pago por uso. <em>(Nota de rigor documental: en la transcripción automática del vídeo se escucha un nombre transcrito fonéticamente como «Lúteos» junto a Abliteration; al no existir constancia documental de una web oficial llamada exactamente así, conviene contrastarlo en la descripción del vídeo original si se busca ese servicio adicional).</em></li>
+        <li><strong>En local gratis desde Hugging Face (máxima privacidad):</strong> en <code>https://huggingface.co/</code> la comunidad publica variantes listas para ejecutar localmente (en formato GGUF con LM Studio, Jan u Ollama), como el ejemplo citado en las fuentes: <strong><code>DeepSeek V4 Pro basado en Qwen 3.5</code> de 9B parámetros</strong> (9.000 millones de parámetros, ligero para equipos domésticos).</li>
+      </ul>
+
+      <h3>7.4. Higiene Digital Externa y Protección frente a Data Brokers (Incogni)</h3>
+      <p>Aunque ejecutes IA local para no filtrar documentos nuevos, tus datos personales previos (teléfono, correo, dirección física) suelen circular entre cientos de intermediarios comerciales (<em>data brokers</em>), alimentando spam y fraudes telefónicos. El vídeo menciona como patrocinador a <strong>Incogni</strong> (<code>https://incogni.com/</code>), que automatiza solicitudes legales de borrado ante más de <strong>420 intermediarios de datos</strong>. Como regla general de seguridad: <strong>jamás subas datos bancarios, contraseñas ni documentos identificables sensibles a chats gratuitos en la nube</strong>.</p>
+
+      <h3>8. Matriz de Decisión Rápida: Qué Entorno Elegir en Cada Caso</h3>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Escenario de trabajo</th>
+              <th>Entorno recomendado</th>
+              <th>Motivo técnico y práctico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Dudas rápidas, aprendizaje diario o prototipo web visual (<code>Run</code>)</td>
+              <td><strong>Chat Web oficial</strong> (<code>chat.deepseek.com</code>)</td>
+              <td>Gratuito, cero configuración y máxima potencia en la nube</td>
+            </tr>
+            <tr>
+              <td>Notas rápidas o consultas hablando mientras caminas</td>
+              <td><strong>App Móvil oficial</strong></td>
+              <td>Dictado instantáneo por voz y sincronización</td>
+            </tr>
+            <tr>
+              <td>Crear presentaciones, PDFs, organizar archivos o crear plugins</td>
+              <td><strong>DeepSeek Harness + OpenCode (gratis) o API oficial</strong></td>
+              <td>Capacidad agéntica completa, Trayectoria auditable y 1M de contexto</td>
+            </tr>
+            <tr>
+              <td>Documentos confidenciales, datos privados o trabajo sin internet</td>
+              <td><strong>DeepSeek Harness + Ollama (<code>deepseek-r1:8b</code> / local)</strong></td>
+              <td>Privacidad total del 100%, cero envío de datos fuera del equipo</td>
+            </tr>
+            <tr>
+              <td>Investigación académica sensible o análisis de software propio autorizado</td>
+              <td><strong>Modelo comunitario local (Hugging Face) o nube privada (<code>Abliteration.ai</code>)</strong></td>
+              <td>Pesos adaptados por la comunidad y entorno controlado</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 7: PROYECTOS Y GLOSARIO -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-7" data-t="Proyectos y Glosario">
+    <div class="card">
+      <h2>10. Proyectos Integradores Autodidactas (De Inicial a PRO)</h2>
+      <p>Marca cada proyecto a medida que lo completes para consolidar la práctica real:</p>
+
+      <div class="card" style="background:var(--bg-elevated);">
+        <h3>Proyecto Integrador 1 (Nivel Inicial): Sistema de cálculo empresarial en Web + captura por voz en Móvil</h3>
+        <ol>
+          <li><strong>En el móvil:</strong> abre la App oficial de DeepSeek, mantén pulsado el micrófono y díctale tres problemas repetitivos de tu trabajo diario que podrían resolverse con una calculadora interactiva. Pídele que elija el más viable.</li>
+          <li><strong>En tu ordenador:</strong> abre <code>https://chat.deepseek.com/</code> con la misma cuenta sincronizada y pídele que convierta la idea elegida en una mini aplicación web en un único archivo HTML con diseño limpio y cálculo en tiempo real.</li>
+          <li><strong>Ejecución:</strong> pulsa el botón <strong>Run</strong>, prueba valores reales y guarda el código como archivo <code>.html</code>.</li>
+        </ol>
+        <label class="checklist-item">
+          <input type="checkbox" data-check-id="chk-proj-1">
+          <span>He completado el Proyecto Integrador 1 (App Móvil por voz + Mini App Web con botón Run).</span>
+        </label>
+      </div>
+
+      <div class="card" style="background:var(--bg-elevated);">
+        <h3>Proyecto Integrador 2 (Nivel Avanzado): Oficina agéntica gratuita con permisos, presentación 16:9 + PDF y plugin propio</h3>
+        <ol>
+          <li><strong>Prepara el entorno:</strong> instala DeepSeek Harness, crea la carpeta <code>proyecto-oficina-ia</code> y selecciónala como <strong>Workspace</strong>.</li>
+          <li><strong>Conecta un modelo gratuito:</strong> añade <strong>OpenCode</strong> (<code>DeepSeek V4.1 Flash Free</code>) o <strong>OpenRouter</strong> (<code>free</code>) y verifica con <em>«¿Me recibes?»</em>.</li>
+          <li><strong>Genera entregables:</strong> en modo <strong>Estándar</strong> y permiso <strong>Ejecutar cambios</strong>, genera una presentación de 8 diapositivas en formato <code>16:9</code> y un <strong>PDF</strong> descargable.</li>
+          <li><strong>Audita y amplía:</strong> revisa la <strong>Trayectoria</strong> y luego usa el <strong>Modo Creador</strong> para instalar un plugin contador de tiempo por tarea.</li>
+        </ol>
+        <label class="checklist-item">
+          <input type="checkbox" data-check-id="chk-proj-2">
+          <span>He completado el Proyecto Integrador 2 (Workspace + Presentación 16:9/PDF + Plugin en Modo Creador).</span>
+        </label>
+      </div>
+
+      <div class="card" style="background:var(--bg-elevated);">
+        <h3>Proyecto Integrador 3 (Nivel PRO): Laboratorio privado 100% offline con Ollama, DeepSeek R1 y DeepSeek Harness</h3>
+        <ol>
+          <li><strong>Audita tu equipo:</strong> comprueba en <code>https://canirun.ai/</code> el tamaño ideal para tu RAM/VRAM (ej. <code>8B</code> para 16–18 GB o <code>7B</code>/<code>1.5B</code> para 8 GB).</li>
+          <li><strong>Descarga el motor local:</strong> instala Ollama, ejecuta <code>ollama pull deepseek-r1:8b</code> y verifica con <code>"Hola ¿cómo estás?"</code>.</li>
+          <li><strong>Enlaza con DeepSeek Harness:</strong> añade el proveedor personalizado <code>Ollama</code> con URL <code>http://localhost:11434/v1</code> (o lanza <code>ollama launch dsh</code>).</li>
+          <li><strong>Prueba sin internet:</strong> apaga el Wi-Fi, abre una carpeta en permiso <strong>Solo lectura</strong> y pídele un informe estructurado de tus documentos sin modificar los originales.</li>
+        </ol>
+        <label class="checklist-item">
+          <input type="checkbox" data-check-id="chk-proj-3">
+          <span>He completado el Proyecto Integrador 3 (Ejecución 100% privada y sin conexión con Ollama + DeepSeek Harness).</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>11. Glosario Técnico Esencial (22 Conceptos Explicados en Lenguaje Claro)</h2>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Término Técnico</th>
+              <th>Explicación Sencilla para Principiantes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Abliteración (<em>Abliteration</em>)</strong></td><td>Técnica matemática aplicada sobre los pesos de un modelo abierto para reducir o eliminar sus mecanismos automáticos de rechazo sin depender de trucos en el prompt.</td></tr>
+            <tr><td><strong>Agente de IA</strong></td><td>Sistema que no se limita a chatear: planifica pasos, lee carpetas, ejecuta comandos en terminal y usa herramientas hasta completar un trabajo.</td></tr>
+            <tr><td><strong>API</strong></td><td>Canal de comunicación estándar que permite a DeepSeek Harness enviar instrucciones y recibir respuestas desde un modelo en la nube o local.</td></tr>
+            <tr><td><strong>API Key</strong></td><td>Contraseña alfanumérica privada que identifica tu cuenta ante un proveedor de IA para autorizar el acceso y medir el uso.</td></tr>
+            <tr><td><strong>Caché KV (<em>Key-Value Cache</em>)</strong></td><td>Memoria temporal que guarda cálculos ya realizados de conversaciones o archivos largos para no repetirlos, abaratando hasta 50 veces las sesiones agénticas.</td></tr>
+            <tr><td><strong>Cordis</strong></td><td>Marco de arquitectura modular sobre el que está construido DeepSeek Harness, donde cada pieza funciona como un plugin conectable.</td></tr>
+            <tr><td><strong>Cuantización</strong></td><td>Compresión numérica de un modelo (<code>Q4</code>, <code>Q8</code>) que reduce el espacio en disco y memoria RAM/VRAM necesarios para correr en un PC doméstico.</td></tr>
+            <tr><td><strong>Endpoint</strong></td><td>Dirección URL a la que una aplicación envía sus peticiones API (como <code>https://api.deepseek.com</code> o <code>http://localhost:11434/v1</code>).</td></tr>
+            <tr><td><strong>Harness</strong></td><td>Entorno completo (interfaz, gestión de archivos, permisos, terminal y bucle de ejecución) que envuelve a un modelo para transformarlo en agente.</td></tr>
+            <tr><td><strong>Localhost</strong></td><td>Dirección de red especial que apunta siempre a tu propio ordenador. El tráfico enviado a <code>localhost</code> jamás sale a internet.</td></tr>
+            <tr><td><strong>Mezcla de Expertos (MoE)</strong></td><td>Arquitectura donde un modelo masivo divide su conocimiento en especialistas internos y solo activa una pequeña fracción en cada respuesta (ej. 8B–16B de 552B).</td></tr>
+            <tr><td><strong>Modelo destilado (<em>Distill</em>)</strong></td><td>Modelo compacto entrenado para conservar el razonamiento de un modelo gigante (serie <code>DeepSeek-R1 Distill</code> de <code>1.5B</code> a <code>70B</code>).</td></tr>
+            <tr><td><strong>Multimodal</strong></td><td>Capacidad nativa de un modelo para comprender distintos tipos de datos además de texto, como imágenes o capturas de pantalla.</td></tr>
+            <tr><td><strong>Parámetros (<code>B</code>)</strong></td><td>Miles de millones de valores numéricos internos ajustados en el entrenamiento que determinan la capacidad y el peso en memoria del modelo.</td></tr>
+            <tr><td><strong>Pesos abiertos (<em>Open Weights</em>)</strong></td><td>Modelos cuyos archivos entrenados se publican abiertamente para descargarlos, auditarlos y ejecutarlos en tu propio hardware.</td></tr>
+            <tr><td><strong>Plugin / Complemento</strong></td><td>Extensión modular que añade herramientas, proveedores gratuitos o cambios visuales dentro de DeepSeek Harness.</td></tr>
+            <tr><td><strong>Prompt</strong></td><td>Instrucción, pregunta o contexto que escribes o dictas a la IA para guiar su respuesta o acción.</td></tr>
+            <tr><td><strong>PTC (<em>Programmatic Tool Calling</em>)</strong></td><td>Modo de DeepSeek Harness donde el agente escribe pequeños programas para ejecutar varias herramientas en lote y ahorrar tokens.</td></tr>
+            <tr><td><strong>Token</strong></td><td>Fragmento mínimo de texto (sílaba, palabra corta o signo) con el que la IA lee, procesa y calcula el coste de uso.</td></tr>
+            <tr><td><strong>Trayectoria</strong></td><td>Registro auditable en línea de tiempo dentro de DeepSeek Harness que muestra cada herramienta, comando y razonamiento ejecutado por el agente.</td></tr>
+            <tr><td><strong>VRAM</strong></td><td>Memoria de alta velocidad de la tarjeta gráfica (o memoria unificada en Apple Silicon) imprescindible para cargar modelos locales con fluidez.</td></tr>
+            <tr><td><strong>Workspace</strong></td><td>Carpeta concreta de tu ordenador que autorizas en DeepSeek Harness para que el agente lea o cree archivos en ella.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 8: PROMPTS (REPOSITORIO COMPLETO DE LOS 17 PROMPTS) -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-8" data-t="PROMPTS">
+    <div class="card">
+      <h2>13. Repositorio Completo de Prompts del Tutorial (Con Contexto de Empleo y Copia Directa)</h2>
+      <p>Aquí tienes reunidos absolutamente todos los <strong>17 prompts, pruebas literales y plantillas</strong> del tutorial —incluidos aquellos ya mostrados en otras secciones—, indicando exactamente dónde y con qué configuración se emplea cada uno.</p>
+
+      <!-- PROMPT 1 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 01 — Mini Aplicación de Coste de Reuniones (Botón Run)</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p1">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(16,185,129,0.1);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En el <strong>Chat Web oficial gratuito</strong> (<code>https://chat.deepseek.com/</code>) para generar una aplicación en un único archivo HTML/CSS/JS y ejecutarla en vivo pulsando el botón <code>Run</code>.
+        </div>
+        <div class="copy-content" id="rep-p1">Crea una mini aplicación web interactiva en un único archivo HTML con CSS y JavaScript que demuestre a las empresas cuánto les está costando cada reunión. Calcula el coste total según el número de asistentes, el precio por hora por asistente y la duración aproximada. Incluye un cronómetro interactivo con botón de Play para visualizar a tiempo real el coste acumulado mientras transcurre la reunión.</div>
+      </div>
+
+      <!-- PROMPT 2 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 02 — Presentación Visual 16:9 (8 Diapositivas) y PDF Descargable</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p2">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(16,185,129,0.1);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness</strong> (Modo Estándar, con permiso <em>Ejecutar cambios</em> o <em>Acceso completo</em> y un modelo como DeepSeek 4.1 Flash vía OpenCode) sobre una carpeta Workspace activa.
+        </div>
+        <div class="copy-content" id="rep-p2">Crea una presentación visual sobre los seis fraudes y engaños digitales más habituales con inteligencia artificial y cómo podemos protegernos de ellos. Incluye ocho diapositivas en formato 16:9 con todos los puntos clave y estadísticas reales verificadas. Genera también el documento en formato PDF descargable dentro del Workspace.</div>
+      </div>
+
+      <!-- PROMPT 3 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 03 — Plugin Contador de Tiempo por Tarea</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p3">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(168,85,247,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness &rarr; Complementos &rarr; + &rarr; Crear tu propio complemento</strong> (o en <strong>Modo Creador</strong>).
+        </div>
+        <div class="copy-content" id="rep-p3">Crea un complemento para DeepSeek Harness que muestre un contador de tiempo visible para saber fácilmente cuánto ha tardado en ejecutarse cada tarea.</div>
+      </div>
+
+      <!-- PROMPT 4 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 04 — Plugin Monitor de Gasto de Tokens y Coste Económico</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p4">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(168,85,247,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness &rarr; Modo Creador</strong> para auditar en vivo el consumo por sesión y proveedor.
+        </div>
+        <div class="copy-content" id="rep-p4">Crea un complemento que lleve el control detallado del gasto total tanto en número de tokens consumidos como en coste económico acumulado por sesión y proveedor.</div>
+      </div>
+
+      <!-- PROMPT 5 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 05 — Rediseño y Personalización Integral de la Interfaz</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p5">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(168,85,247,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness &rarr; Modo Creador</strong> para modificar colores, paneles y estética visual de la propia aplicación.
+        </div>
+        <div class="copy-content" id="rep-p5">Rediseña y personaliza por completo la interfaz de la aplicación cambiando la disposición de paneles y la paleta visual según estas preferencias: [describe aquí tus colores o estilo].</div>
+      </div>
+
+      <!-- PROMPT 6 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 06 — Aplicación Interactiva en 3D del Mundo</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p6">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(168,85,247,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness &rarr; Modo Creador</strong> para incrustar un globo terráqueo 3D interactivo dentro de la interfaz.
+        </div>
+        <div class="copy-content" id="rep-p6">Crea una aplicación interactiva en 3D del mundo integrada dentro de la interfaz para poder rotarla y explorarla en vivo.</div>
+      </div>
+
+      <!-- PROMPT 7 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 07 — Cambio de Nombre Visible de la Aplicación (Ej. alejadnes)</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p7">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(168,85,247,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness &rarr; Modo Creador</strong> para personalizar la marca o título de la ventana del programa.
+        </div>
+        <div class="copy-content" id="rep-p7">Cambia el nombre visible de la aplicación personalizada a [tu nombre elegido, por ejemplo: alejadnes].</div>
+      </div>
+
+      <!-- PROMPT 8 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 08 — Temporizador Pomodoro Flotante (Ejemplo Oficial DeepSeek)</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p8">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(168,85,247,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness &rarr; Modo Creador</strong> para añadir un reloj flotante de concentración (25:00 Focus y descanso).
+        </div>
+        <div class="copy-content" id="rep-p8">Write a Pomodoro timer plugin for me (o en español: Crea un complemento de temporizador Pomodoro flotante siempre visible encima de la ventana, con modos de Focus de 25 minutos y descanso corto).</div>
+      </div>
+
+      <!-- PROMPT 9 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 09 — Organización y Clasificación de Carpetas Locales</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p9">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(56,189,248,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness</strong> sobre una carpeta Workspace (usa <em>Solo lectura</em> si solo deseas el diagnóstico previo, o <em>Ejecutar cambios / Acceso completo</em> para mover archivos y crear el índice).
+        </div>
+        <div class="copy-content" id="rep-p9">Revisa el contenido completo de la carpeta actual del Workspace, clasifica los documentos por temática o formato, reorganízalos en subcarpetas claras y crea un archivo índice README.md resumiendo el contenido de cada una.</div>
+      </div>
+
+      <!-- PROMPT 10 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 10 — Automatización Semanal Programada (schedule_create)</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p10">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(56,189,248,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness</strong> con el complemento de <strong>Automation / Tareas programadas</strong> activado.
+        </div>
+        <div class="copy-content" id="rep-p10">Todos los viernes a las 17:00 resume las notas del proyecto de esta semana en un informe semanal guardado en el Workspace.</div>
+      </div>
+
+      <!-- PROMPT 11 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 11 — Verificación Rápida de Proveedor Gratuito (OpenCode / OpenRouter)</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p11">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(16,185,129,0.1);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness</strong> justo después de configurar un proveedor gratuito externo como OpenCode o Nvidia NIM para confirmar que el puente responde.
+        </div>
+        <div class="copy-content" id="rep-p11">¿Me recibes? Confírmame en una frase breve si la conexión funciona correctamente.</div>
+      </div>
+
+      <!-- PROMPT 12 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 12 — Prueba Literal Offline en Ollama Local</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p12">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(16,185,129,0.1);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En la interfaz de <strong>Ollama</strong> (o mediante <code>ollama run deepseek-r1:8b</code>) con el Wi-Fi desconectado tras completar <code>ollama pull</code>.
+        </div>
+        <div class="copy-content" id="rep-p12">Hola ¿cómo estás?</div>
+      </div>
+
+      <!-- PROMPT 13 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 13 — Captura de Ideas por Dictado de Voz en la App Móvil</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p13">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(56,189,248,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En la <strong>Aplicación Móvil Oficial de DeepSeek (iOS / Android)</strong> manteniendo pulsado el botón de micrófono.
+        </div>
+        <div class="copy-content" id="rep-p13">Resume estas tres ideas que te voy a dictar ahora y dime cuál de ellas conviene convertir primero en una herramienta web paso a paso: [habla tus tres ideas y suelta el botón].</div>
+      </div>
+
+      <!-- PROMPT 14 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 14 — Investigación Académica Histórica o Geopolítica Sensible</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p14">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(245,158,11,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>modelos locales o comunitarios de pesos abiertos</strong> para estudios históricos o políticos donde los filtros comerciales dan falsos rechazos.
+        </div>
+        <div class="copy-content" id="rep-p14">Analiza de forma objetiva, histórica y multidisciplinar las causas, argumentos enfrentados y consecuencias documentadas de [tema histórico o geopolítico sensible], citando las distintas perspectivas académicas existentes.</div>
+      </div>
+
+      <!-- PROMPT 15 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 15 — Análisis de Arquitectura en Software Propio o Autorizado</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p15">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(245,158,11,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness conectado a un modelo local</strong> analizando código propio o expresamente autorizado en el Workspace.
+        </div>
+        <div class="copy-content" id="rep-p15">Analiza la estructura y el flujo lógico de este código o aplicación propia autorizada ubicada en el Workspace, explica cómo gestiona sus módulos principales y propón una arquitectura alternativa limpia para replicar su funcionalidad desde cero.</div>
+      </div>
+
+      <!-- PROMPT 16 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 16 — Auditoría Defensiva de Seguridad en Sistemas Propios</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p16">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(245,158,11,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>DeepSeek Harness en modo Solo lectura con modelo local</strong> sobre archivos de configuración de tu propio servidor o infraestructura.
+        </div>
+        <div class="copy-content" id="rep-p16">Revisa los archivos de configuración y registros de mi servidor o aplicación propia en esta carpeta en busca de buenas prácticas de seguridad o configuraciones débiles, y explica paso a paso cómo endurecer y proteger el sistema.</div>
+      </div>
+
+      <!-- PROMPT 17 -->
+      <div class="copy-block">
+        <div class="copy-header">
+          <span class="copy-label">Prompt 17 — Análisis Confidencial de Documentos Privados o Salud Offline</span>
+          <button type="button" class="btn-copy" data-copy-target="rep-p17">📋 COPIAR PROMPT</button>
+        </div>
+        <div style="padding:8px 12px;background:rgba(245,158,11,0.12);font-size:0.84rem;">
+          <strong>Dónde se emplea:</strong> En <strong>ejecución 100% local y sin internet (Ollama + DeepSeek Harness en modo Solo lectura)</strong> para máxima privacidad documental.
+        </div>
+        <div class="copy-content" id="rep-p17">Lee en modo local y sin conexión el documento confidencial adjunto en este Workspace y extrae las cláusulas clave, posibles riesgos o dudas pendientes redactadas en lenguaje claro para preparar mi consulta con un profesional.</div>
+      </div>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 9: 33 PREGUNTAS (Q&A) — ANTES DE ERRORES -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-9" data-t="33 Preguntas (Q&A)">
+    <div class="card">
+      <h2>12. 33 Preguntas y Respuestas Ordenadas por Nivel de Dificultad (Nivel 1, Nivel 2 y Nivel 3)</h2>
+      <p>Pon a prueba tu dominio del ecosistema DeepSeek con las 33 preguntas oficiales divididas en <strong>Nivel 1 (Básico: 1 a 11)</strong>, <strong>Nivel 2 (Avanzado: 12 a 22)</strong> y <strong>Nivel 3 (PRO: 23 a 33)</strong>. Utiliza los botones inferiores para desplegar o plegar todas las respuestas al instante:</p>
+
+      <div class="qa-controls">
+        <button type="button" class="btn-qa-toggle" id="btn-expand-all-qa">+ Desplegar todas respuestas</button>
+        <button type="button" class="btn-qa-toggle" id="btn-collapse-all-qa">- Plegar todas las respuestas</button>
+      </div>
+
+      <h3>Nivel 1 — Bloque Básico (Preguntas 1 a 11)</h3>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 1. ¿Hay que pagar alguna suscripción mensual para empezar a usar DeepSeek?</span></summary>
+        <div class="qa-answer">No. Tanto el Chat Web oficial (<code>https://chat.deepseek.com/</code>) como la aplicación móvil oficial para iOS y Android son completamente gratuitos y no tienen planes de suscripción de pago para chatear con sus modelos principales.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 2. ¿Cuál es la diferencia principal entre la familia de modelos Flash y la familia Pro?</span></summary>
+        <div class="qa-answer">Los modelos <strong>Flash</strong> (<code>DeepSeek-V4.1-Flash</code>) están optimizados para ser muy rápidos, económicos y multimodales (aceptan texto e imagen), sirviendo para casi todas las tareas cotidianas y agénticas; los modelos <strong>Pro</strong> están orientados a razonamiento complejo profundo sobre texto puro.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 3. ¿Qué ventaja ofrece el botón <code>Run</code> dentro del Chat Web oficial?</span></summary>
+        <div class="qa-answer">Cuando le pides al chat web que programe una pequeña herramienta en HTML/CSS/JavaScript (como la calculadora de costes de reuniones), el botón <strong>Run</strong> te permite abrir y probar esa mini aplicación de forma interactiva dentro del propio navegador sin instalar nada.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 4. ¿Qué función especial destaca en la aplicación móvil oficial frente al uso manual?</span></summary>
+        <div class="qa-answer">El <strong>dictado por voz</strong>: manteniendo pulsado el botón de micrófono, hablando con naturalidad y soltándolo al terminar, la aplicación transcribe automáticamente tu voz y genera la respuesta al instante.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 5. ¿Por qué la aplicación móvil no sirve para organizar carpetas de mi ordenador?</span></summary>
+        <div class="qa-answer">Porque la app móvil funciona únicamente como chat conversacional en la nube. Para que DeepSeek pueda leer, organizar o crear archivos reales en tu equipo necesitas instalar <strong>DeepSeek Harness</strong> en tu ordenador.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 6. ¿Qué significa que DeepSeek sea de «código abierto» o «pesos abiertos»?</span></summary>
+        <div class="qa-answer">Significa que los archivos matemáticos del modelo (bajo licencias abiertas como MIT) no están encerrados en secreto: cualquier persona o empresa puede descargarlos, modificarlos, integrarlos en otras herramientas o ejecutarlos gratis en sus propios ordenadores.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 7. ¿Es obligatorio añadir saldo o dinero la primera vez que instalo DeepSeek Harness?</span></summary>
+        <div class="qa-answer">No. Aunque el asistente inicial pueda sugerir añadir algo de crédito, puedes omitir ese paso y conectar proveedores gratuitos de terceros o modelos locales descargados con Ollama.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 8. ¿Por qué no puedo escribir en el chat de DeepSeek Harness aunque ya lo haya instalado?</span></summary>
+        <div class="qa-answer">Porque antes de habilitar el cuadro de escritura es obligatorio <strong>seleccionar un Workspace</strong> (una carpeta concreta de tu ordenador). En cuanto elijas una carpeta de trabajo, el cuadro de chat se activará.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 9. ¿Qué es un «token» explicado de forma sencilla?</span></summary>
+        <div class="qa-answer">Es la unidad mínima de texto en la que la IA divide tus mensajes y sus respuestas (aproximadamente una palabra corta o fracción de palabra), y sirve tanto para medir cuánta información cabe en memoria como para calcular el coste en las APIs.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 10. ¿Qué hace exactamente el nivel de permiso «Solo lectura» en DeepSeek Harness?</span></summary>
+        <div class="qa-answer">Permite que el agente lea y consulte todos los archivos dentro de la carpeta seleccionada para responder tus preguntas o resumir información, pero bloquea cualquier intento de modificar, mover o crear archivos nuevos.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge emerald">Nivel 1</span> 11. ¿Para qué sirve el botón «Trayectoria» dentro de una sesión de DeepSeek Harness?</span></summary>
+        <div class="qa-answer">Muestra paso a paso toda la línea de tiempo interna de lo que hizo el agente: qué herramientas utilizó, qué archivos leyó, qué comandos ejecutó y en qué orden ocurrió cada acción.</div>
+      </details>
+
+      <h3>Nivel 2 — Bloque Avanzado (Preguntas 12 a 22)</h3>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 12. ¿Cuál es la diferencia práctica entre usar el Chat Web gratuito y usar la API oficial de DeepSeek?</span></summary>
+        <div class="qa-answer">El Chat Web es gratuito pero manual en navegador; la <strong>API oficial</strong> (<code>platform.deepseek.com</code>) se paga por consumo de tokens (con tarifas muy bajas, desde centavos por millón de tokens) y sirve para conectar DeepSeek Harness o tus propios programas y automatizaciones sin límites de interfaz.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 13. ¿Cómo se distingue un horario Punta (Peak) de un horario Valle (Off-Peak) en la API oficial?</span></summary>
+        <div class="qa-answer">Las horas punta son de lunes a viernes entre <code>01:00–04:00 UTC</code> y <code>06:00–10:00 UTC</code> (salvo festivos en China). Todas las demás horas del día, los fines de semana completos y los festivos chinos operan en horario valle con un <strong>50% de descuento</strong> sobre las tarifas punta.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 14. ¿Qué papel juega la caché KV en el ahorro de costes con DeepSeek-V4.1-Flash?</span></summary>
+        <div class="qa-answer">Los agentes leen repetidamente los mismos archivos y contextos. V4.1-Flash comprime su caché KV (a un cuarto de HBM y un octavo de SSD respecto a la generación previa) y cobra los aciertos de caché a solo <code>$0.003</code> por millón de tokens en horario valle, reduciendo drásticamente el gasto de sesiones largas.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 15. ¿Qué significa la arquitectura «todo es un plugin» basada en Cordis dentro de DeepSeek Harness?</span></summary>
+        <div class="qa-answer">Significa que no es un programa rígido: los proveedores de modelos, las herramientas de archivos, los terminales, la interfaz visual e incluso el bucle de decisión del agente son módulos independientes que se pueden intercambiar, activar o ampliar mediante complementos.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 16. ¿En qué se diferencian los cuatro modos de trabajo: Estándar, PTC, Mínimo y Creador?</span></summary>
+        <div class="qa-answer"><strong>Estándar</strong> ofrece todas las herramientas habituales paso a paso; <strong>PTC</strong> deja que el modelo escriba código para ejecutar múltiples herramientas en lote (ahorrando tokens, aunque más propenso a fallos en modelos pequeños); <strong>Mínimo</strong> deja solo terminal y edición básica para medir rendimiento puro; y <strong>Creador</strong> sirve para programar e instalar nuevos plugins dentro del propio harness.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 17. ¿Cuándo conviene usar «Acceso completo» frente a «Ejecutar cambios» o «Autoiteración»?</span></summary>
+        <div class="qa-answer">Usa <strong>Ejecutar cambios</strong> cuando quieras aprobar manualmente cada modificación; usa <strong>Acceso completo</strong> solo dentro de carpetas de trabajo seguras donde confíes en que el agente trabaje sin interrupciones; y usa <strong>Autoiteración (Beta)</strong> cuando quieras que el agente revise y refine su propio resultado antes de entregártelo.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 18. ¿Cómo puedes usar modelos gratuitos como <code>DeepSeek V4.1 Flash Free</code> dentro de DeepSeek Harness?</span></summary>
+        <div class="qa-answer">Conectando proveedores externos que ofrecen cuotas gratuitas —como <strong>OpenCode</strong> (cuya versión <code>deepseek-v4.1-flash-free</code> cuenta con política de cero retención según su documentación), <strong>OpenRouter</strong> (filtrando por <code>free</code>) o <strong>Nvidia NIM</strong>— mediante la configuración de Modelos o instalando el complemento correspondiente desde GitHub.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 19. ¿Qué tipo de cosas puedes construir con el «Modo Creador» sin escribir el plugin a mano?</span></summary>
+        <div class="qa-answer">Desde contadores de tiempo por tarea y monitores de gasto de tokens/coste, hasta un temporizador Pomodoro flotante, aplicaciones interactivas en 3D o cambiar el diseño visual completo y el nombre de la aplicación.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 20. ¿Qué ocurre si ejecuto DeepSeek Harness desde terminal con <code>npx @deepseek-ai/dsh web</code> en lugar de la app de escritorio?</span></summary>
+        <div class="qa-answer">Requiere tener instalado <strong>Node.js</strong> (<code>^22.19.0</code> o <code>&gt;=24.0.0</code>) y levanta un servidor web local en el puerto <code>3080</code> para manejar exactamente la misma plataforma agéntica directamente desde tu navegador web.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 21. ¿Cómo puedes programar tareas recurrentes automáticas en DeepSeek Harness?</span></summary>
+        <div class="qa-answer">Activando el complemento de tareas programadas (<em>Scheduled tasks / Automation</em>) y pidiendo en lenguaje natural la frecuencia deseada (por ejemplo, generar un informe semanal todos los viernes a una hora fija).</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge amber">Nivel 2</span> 22. ¿Por qué el vídeo recomienda visitar una página comprobadora como <code>CanIRun.ai</code> antes de instalar modelos locales?</span></summary>
+        <div class="qa-answer">Porque analiza automáticamente la memoria RAM/VRAM y GPU de tu dispositivo para indicarte con precisión qué tamaño de modelo (<code>7B</code>, <code>8B</code>, <code>14B</code>, etc.) correrá fluido en tu equipo y cuál lo ralentizará o bloqueará.</div>
+      </details>
+
+      <h3>Nivel 3 — Bloque PRO (Preguntas 23 a 33)</h3>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 23. ¿Por qué un ordenador doméstico con 18 GB de VRAM no puede ejecutar <code>DeepSeek-V4.1-Flash</code> (552B) de forma nativa en memoria?</span></summary>
+        <div class="qa-answer">Porque el modelo completo requiere cientos de gigabytes de memoria (alrededor de 500 GB incluso cuantizado en formatos GGUF avanzados). Por eso en equipos domésticos se utilizan modelos <strong>R1 destilados (<code>1.5B</code> a <code>14B</code>)</strong> que sí caben cómodamente en 8 a 18 GB.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 24. ¿Cuál es el proceso exacto paso a paso para descargar y probar un modelo local con Ollama?</span></summary>
+        <div class="qa-answer">Primero instalas Ollama desde <code>ollama.com</code>, después ejecutas en terminal <code>ollama pull deepseek-r1:8b</code> (ajustando el tamaño a tu hardware) y finalmente verificas su respuesta offline enviándole una prueba como <code>"Hola ¿cómo estás?"</code> desde la app de Ollama o con <code>ollama run deepseek-r1:8b</code>.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 25. ¿Qué dos métodos existen para conectar Ollama dentro de DeepSeek Harness?</span></summary>
+        <div class="qa-answer">El método rápido por terminal usando <code>ollama launch dsh</code> (que guarda sus ajustes en <code>~/.ollama/launch/dsh/settings.yaml</code> sin alterar tus ajustes globales) o el método gráfico añadiendo un proveedor personalizado llamado <code>Ollama</code> apuntando a la URL <code>http://localhost:11434/v1</code>.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 26. ¿Por qué aparece el error de falta de clave API en <code>web_search</code> cuando usas DeepSeek Harness con Ollama?</span></summary>
+        <div class="qa-answer">Porque el complemento de búsqueda web predeterminado de DeepSeek Harness consulta el servicio de DeepSeek si no se cambia. Si trabajas offline o con Ollama local, debes desactivar esa búsqueda web o utilizar <code>ollama launch dsh</code> conectado a tu sesión de Ollama (<code>ollama signin</code>) con un modelo compatible con herramientas.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 27. ¿En qué se diferencia la «abliteración» de un modelo frente a los trucos de prompt en modelos cerrados?</span></summary>
+        <div class="qa-answer">Los trucos de prompt intentan sortear un filtro manipulando el texto enviado en una conversación sin alterar el modelo; la <strong>abliteración</strong> modifica directamente los pesos matemáticos internos de un modelo abierto para reducir su tendencia a rechazar consultas válidas de manera permanente.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 28. ¿Qué diferencia hay entre ejecutar un modelo sin filtros restrictivos en <code>Abliteration.ai</code> y descargarlo de Hugging Face?</span></summary>
+        <div class="qa-answer"><code>Abliteration.ai</code> ejecuta el modelo en servidores privados en la nube (es de pago por uso, útil si no tienes hardware potente); descargar variantes comunitarias desde <strong>Hugging Face</strong> (como la variante <code>DeepSeek V4 Pro</code> basada en <code>Qwen 3.5</code> de <code>9B</code>) es gratuito, privado y 100% local si tu equipo soporta ese tamaño.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 29. ¿Qué cuatro usos legítimos justifican emplear modelos locales con menor restricción de filtros?</span></summary>
+        <div class="qa-answer">La investigación académica de temas históricos/políticos sensibles, el análisis de arquitectura de software propio o autorizado, la auditoría defensiva de seguridad en sistemas propios y las consultas confidenciales sobre salud o documentos privados sin enviar datos a terceros.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 30. ¿Cómo compatibiliza la API oficial de DeepSeek herramientas creadas originalmente para OpenAI o Anthropic?</span></summary>
+        <div class="qa-answer">Ofrece dos URLs base oficiales: <code>https://api.deepseek.com</code> (compatible con el SDK y formato de mensajes de OpenAI) y <code>https://api.deepseek.com/anthropic</code> (compatible con el formato de Anthropic/Claude), permitiendo migrar herramientas existentes cambiando solo la URL base, el nombre del modelo y la clave API.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 31. ¿Qué riesgos implica cambiar el modo Estándar a Acceso Completo en una carpeta personal importante?</span></summary>
+        <div class="qa-answer">El agente podrá crear, sobrescribir, mover o eliminar archivos y ejecutar comandos en esa carpeta sin pedirte confirmación previa en cada paso. Por ello debe usarse exclusivamente en carpetas de proyecto dedicadas o respaldadas con copias de seguridad / Git.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 32. ¿Qué alternativas existen a Ollama para ejecutar modelos locales en interfaz gráfica?</span></summary>
+        <div class="qa-answer">Las fuentes destacan <strong>Jan</strong> (<code>jan.ai</code>) y <strong>LM Studio</strong> (<code>lmstudio.ai</code>), dos aplicaciones gratuitas de escritorio que facilitan descargar modelos cuantizados desde Hugging Face, comprobar su consumo de memoria y levantar servidores locales compatibles.</div>
+      </details>
+
+      <details class="qa-item">
+        <summary><span><span class="badge rose">Nivel 3</span> 33. ¿Por qué la protección frente a <em>data brokers</em> (como Incogni) complementa la privacidad al trabajar con IA?</span></summary>
+        <div class="qa-answer">Porque aunque ejecutes modelos locales offline para no filtrar tus documentos a servidores de IA, tus datos personales previos (teléfono, correo, dirección) pueden estar circulando entre cientos de intermediarios comerciales en internet alimentando spam y fraudes, por lo que proteger ambos frentes garantiza una privacidad integral.</div>
+      </details>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 10: ERRORES (TROUBLESHOOTING PASO A PASO) -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-10" data-t="ERRORES">
+    <div class="card">
+      <h2>9. Solución de Problemas Frecuentes (Troubleshooting Paso a Paso)</h2>
+      <p>Si encuentras algún bloqueo durante la práctica, localiza aquí el síntoma exacto y aplica la solución verificada:</p>
+
+      <h3>9.1. Fallos en Chat Web y App Móvil</h3>
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 1: El Chat Web no muestra el botón <code>Run</code> tras generar código</h4>
+        <p><strong>Causa:</strong> El modelo dividió el código en tres bloques separados (uno para HTML, otro para CSS y otro para JS).<br>
+        <strong>Solución:</strong> Escríbele en el chat: <em>«Unifica todo el HTML, CSS y JavaScript en un único archivo autocontenido para poder ejecutarlo con el botón Run»</em>.</p>
+      </div>
+
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 2: La aplicación móvil no transcribe el dictado por voz</h4>
+        <p><strong>Causa:</strong> Falta permiso de micrófono en el sistema operativo o soltaste el botón antes de hablar.<br>
+        <strong>Solución:</strong> Ve a los Ajustes de privacidad de iOS o Android, concede permiso de <strong>Micrófono</strong> a la app DeepSeek y recuerda <strong>mantener pulsado</strong> el icono durante toda tu frase antes de soltarlo.</p>
+      </div>
+
+      <h3>9.2. Fallos de Instalación, Bloqueo de Escritura y Modos en DeepSeek Harness</h3>
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 3: El cuadro de texto del chat aparece gris y no me deja escribir</h4>
+        <p><strong>Causa:</strong> No has seleccionado una carpeta de trabajo (<strong>Workspace</strong>).<br>
+        <strong>Solución:</strong> Pulsa en <strong>Seleccionar Workspace</strong> en la barra superior o lateral y elige una carpeta de tu ordenador; el cuadro se desbloqueará de inmediato.</p>
+      </div>
+
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 4: Error al ejecutar <code>npx @deepseek-ai/dsh web</code> en terminal</h4>
+        <p><strong>Causa:</strong> No tienes Node.js instalado o tu versión es antigua.<br>
+        <strong>Solución:</strong> Comprueba tu versión con <code>node -v</code>. DeepSeek Harness exige <strong>Node.js <code>^22.19.0</code> o <code>&gt;=24.0.0</code></strong>. Instala una versión compatible desde nodejs.org, reinicia la terminal y vuelve a lanzar el comando.</p>
+      </div>
+
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 5: El agente falla repetidamente al llamar herramientas en Modo PTC</h4>
+        <p><strong>Causa:</strong> El modo PTC agrupa llamadas mediante un script intermedio que puede fallar en modelos pequeños o gratuitos.<br>
+        <strong>Solución:</strong> Cambia el selector a <strong>Modo Estándar</strong>, repite la petición y audita los pasos en el botón <strong>Trayectoria</strong>.</p>
+      </div>
+
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 6: Un complemento recién instalado o actualizado no aparece</h4>
+        <p><strong>Solución:</strong> Al actualizar o reemplazar un paquete ya cargado en memoria en DeepSeek Harness, cierra por completo la aplicación y vuelve a abrirla para que recargue los módulos Cordis.</p>
+      </div>
+
+      <h3>9.3. Fallos de APIs, Proveedores Gratuitos y Búsqueda Web con Ollama</h3>
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 7: Error de autenticación (401) o falta de saldo en la API oficial</h4>
+        <p><strong>Causa:</strong> Clave copiada con espacios extra o saldo agotado (recuerda que el Chat Web gratuito y la API en <code>platform.deepseek.com</code> son productos independientes).<br>
+        <strong>Solución:</strong> Revisa tu saldo en <code>https://platform.deepseek.com/</code> y genera una API Key limpia.</p>
+      </div>
+
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 8: Límite alcanzado en proveedor gratuito (OpenCode / OpenRouter)</h4>
+        <p><strong>Solución:</strong> Los modelos <code>free</code> tienen límites de peticiones por minuto. Espera unos minutos o cambia en el selector a otro proveedor gratuito (Nvidia NIM) o a tu modelo local en Ollama.</p>
+      </div>
+
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 9: Error de falta de clave API en <code>web_search</code> al usar Ollama</h4>
+        <p><strong>Causa:</strong> La herramienta de búsqueda web por defecto sigue intentando usar el buscador de DeepSeek.<br>
+        <strong>Solución:</strong> Desactiva el plugin de búsqueda web de DeepSeek en <em>Complementos</em> si trabajas 100% offline, o inicia sesión en Ollama (<code>ollama signin</code>) si usas <code>ollama launch dsh</code>.</p>
+      </div>
+
+      <h3>9.4. Fallos de Hardware, Lentitud y Puertos en Ejecución Local</h3>
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 10: El modelo local responde lentísimo o bloquea el ordenador</h4>
+        <p><strong>Causa:</strong> El modelo supera tu RAM/VRAM disponible.<br>
+        <strong>Solución:</strong> Verifica tu equipo en <code>https://canirun.ai/</code>, borra el modelo pesado con <code>ollama rm &lt;modelo&gt;</code> y descarga uno más ligero como <code>ollama pull deepseek-r1:1.5b</code> o <code>ollama pull deepseek-r1:7b</code>.</p>
+      </div>
+
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 11: DeepSeek Harness no detecta modelos al añadir Ollama como proveedor personalizado</h4>
+        <p><strong>Solución en 3 pasos:</strong> 1) Confirma que la app Ollama está abierta en segundo plano; 2) Verifica que la URL escrita sea exactamente <code>http://localhost:11434/v1</code> (incluyendo <code>/v1</code>); 3) Ejecuta <code>ollama list</code> en terminal para confirmar que descargaste al menos un modelo.</p>
+      </div>
+
+      <div class="pedagogy-box warning">
+        <h4>Síntoma 12: Puerto <code>3080</code> ocupado al lanzar <code>dsh web</code></h4>
+        <p><strong>Solución:</strong> Lanza la aplicación en otro puerto libre añadiendo <code>--port 3081</code> (o <code>ollama launch dsh -- --port 3081</code>).</p>
+      </div>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 11: RESUMEN -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-11" data-t="RESUMEN">
+    <div class="card">
+      <h2>8 y 11. Resumen Ejecutivo de Buenas Prácticas y Hoja de Ruta</h2>
+      <p>Repasa las claves maestras de cada nivel para asegurarte de que aprovechas el 100% del ecosistema DeepSeek mejor que el 99% de los usuarios:</p>
+
+      <div class="pedagogy-grid">
+        <div class="pedagogy-box">
+          <h4>1. NUBE OFICIAL GRATUITA</h4>
+          <p>Usa <code>chat.deepseek.com</code> para consultas diarias y creación de prototipos interactivos con el botón <strong>Run</strong>, y la App Móvil oficial para dictar prompts largos con el micrófono.</p>
+        </div>
+        <div class="pedagogy-box purpose">
+          <h4>2. ESTACIÓN AGÉNTICA (DSH)</h4>
+          <p>En <strong>DeepSeek Harness</strong> selecciona siempre un <strong>Workspace</strong> dedicado, escala permisos con prudencia (empezando por <em>Solo lectura</em> o <em>Ejecutar cambios</em>), audita con <strong>Trayectoria</strong> y personaliza la app con el <strong>Modo Creador</strong>.</p>
+        </div>
+        <div class="pedagogy-box importance">
+          <h4>3. OPTIMIZACIÓN DE COSTES</h4>
+          <p>Conecta motores gratuitos como <strong>OpenCode (`DeepSeek V4.1 Flash Free`)</strong>, OpenRouter o Nvidia NIM, o usa la API oficial en <strong>Horas Valle (Off-Peak)</strong> al 50% de descuento aprovechando el <strong>Cache Hit ($0.003/1M)</strong>.</p>
+        </div>
+        <div class="pedagogy-box warning">
+          <h4>4. SOBERANÍA LOCAL OFFLINE</h4>
+          <p>Analiza tu hardware en <code>CanIRun.ai</code>, instala <strong>Ollama</strong>, descarga <code>deepseek-r1:8b</code> (o la variante acorde a tu RAM/VRAM) y conéctalo a DeepSeek Harness vía <code>http://localhost:11434/v1</code> para privacidad absoluta sin internet.</p>
+        </div>
+      </div>
+
+      <h3>Lista de Verificación Final de Dominio Completo</h3>
+      <label class="checklist-item">
+        <input type="checkbox" data-check-id="chk-sum-1">
+        <span>Sé crear y ejecutar mini aplicaciones web en el Chat Web oficial usando el botón <code>Run</code>.</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" data-check-id="chk-sum-2">
+        <span>Sé desbloquear el chat de DeepSeek Harness seleccionando un Workspace y elegir entre los 4 modos (Estándar, PTC, Mínimo, Creador) y los 4 permisos.</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" data-check-id="chk-sum-3">
+        <span>Sé conectar proveedores gratuitos (OpenCode / OpenRouter / Nvidia NIM) y la API oficial de DeepSeek aprovechando horarios Off-Peak.</span>
+      </label>
+      <label class="checklist-item">
+        <input type="checkbox" data-check-id="chk-sum-4">
+        <span>Sé descargar modelos locales con Ollama (<code>ollama pull deepseek-r1:8b</code>) y enlazarlos con DeepSeek Harness en <code>http://localhost:11434/v1</code>.</span>
+      </label>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 12: FUENTES -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-12" data-t="FUENTES">
+    <div class="card">
+      <h2>14. Fuentes Fiables y Documentación Oficial Verificada</h2>
+      <p>Todos los enlaces oficiales incluyen su botón obligatorio <strong>«Abrir enlace en nueva ventana»</strong> y botón de copia directa para que puedas utilizarlos de forma segura en cualquier dispositivo:</p>
+
+      <h3>14.1. Documentación Oficial de DeepSeek y DeepSeek Harness (Prioridad 1)</h3>
+
+      <div class="url-card">
+        <strong>Sitio oficial de DeepSeek:</strong>
+        <span class="url-text">https://www.deepseek.com/</span>
+        <div class="url-actions">
+          <a href="https://www.deepseek.com/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://www.deepseek.com/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Chat Web oficial gratuito:</strong>
+        <span class="url-text">https://chat.deepseek.com/</span>
+        <div class="url-actions">
+          <a href="https://chat.deepseek.com/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://chat.deepseek.com/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Descargas oficiales (DeepSeek Harness Desktop y App Móvil iOS/Android):</strong>
+        <span class="url-text">https://www.deepseek.com/en/download/</span>
+        <div class="url-actions">
+          <a href="https://www.deepseek.com/en/download/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://www.deepseek.com/en/download/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Página oficial de DeepSeek Harness:</strong>
+        <span class="url-text">https://www.deepseek.com/en/harness/</span>
+        <div class="url-actions">
+          <a href="https://www.deepseek.com/en/harness/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://www.deepseek.com/en/harness/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Repositorio oficial de código abierto de DeepSeek Harness (GitHub):</strong>
+        <span class="url-text">https://github.com/deepseek-ai/deepseek-harness</span>
+        <div class="url-actions">
+          <a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://github.com/deepseek-ai/deepseek-harness">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Documentación oficial de usuario y Web UI de DeepSeek Harness:</strong>
+        <span class="url-text">https://deepseek-harness.github.io/deepseek-harness/</span>
+        <div class="url-actions">
+          <a href="https://deepseek-harness.github.io/deepseek-harness/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://deepseek-harness.github.io/deepseek-harness/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Portal oficial de la API y creación de API Keys:</strong>
+        <span class="url-text">https://platform.deepseek.com/</span>
+        <div class="url-actions">
+          <a href="https://platform.deepseek.com/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://platform.deepseek.com/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Documentación oficial de la API de DeepSeek:</strong>
+        <span class="url-text">https://api-docs.deepseek.com/</span>
+        <div class="url-actions">
+          <a href="https://api-docs.deepseek.com/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://api-docs.deepseek.com/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Tabla oficial de modelos y tarifas (Peak / Off-Peak):</strong>
+        <span class="url-text">https://api-docs.deepseek.com/quick_start/pricing/</span>
+        <div class="url-actions">
+          <a href="https://api-docs.deepseek.com/quick_start/pricing/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://api-docs.deepseek.com/quick_start/pricing/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Anuncio oficial de arquitectura y lanzamiento de DeepSeek-V4.1-Flash:</strong>
+        <span class="url-text">https://api-docs.deepseek.com/news/news260910/</span>
+        <div class="url-actions">
+          <a href="https://api-docs.deepseek.com/news/news260910/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://api-docs.deepseek.com/news/news260910/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <h3>14.2. Documentación Oficial de Ejecución Local y Hardware (Prioridad 2)</h3>
+
+      <div class="url-card">
+        <strong>Sitio oficial de Ollama:</strong>
+        <span class="url-text">https://ollama.com/</span>
+        <div class="url-actions">
+          <a href="https://ollama.com/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://ollama.com/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Documentación oficial de integración Ollama + DeepSeek Harness (<code>ollama launch dsh</code>):</strong>
+        <span class="url-text">https://docs.ollama.com/integrations/deepseek-harness</span>
+        <div class="url-actions">
+          <a href="https://docs.ollama.com/integrations/deepseek-harness" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://docs.ollama.com/integrations/deepseek-harness">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Comprobador de hardware en navegador (CanIRun.ai):</strong>
+        <span class="url-text">https://canirun.ai/</span>
+        <div class="url-actions">
+          <a href="https://canirun.ai/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://canirun.ai/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Calculadora de VRAM y cuantización (CanItRun.dev):</strong>
+        <span class="url-text">https://canitrun.dev/</span>
+        <div class="url-actions">
+          <a href="https://canitrun.dev/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://canitrun.dev/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Alternativa local Jan:</strong>
+        <span class="url-text">https://www.jan.ai/</span>
+        <div class="url-actions">
+          <a href="https://www.jan.ai/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://www.jan.ai/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Alternativa local LM Studio:</strong>
+        <span class="url-text">https://lmstudio.ai/</span>
+        <div class="url-actions">
+          <a href="https://lmstudio.ai/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://lmstudio.ai/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <h3>14.3. Proveedores Externos, Complementos y Repositorios Verificados</h3>
+
+      <div class="url-card">
+        <strong>OpenCode (Sitio oficial):</strong>
+        <span class="url-text">https://opencode.ai/</span>
+        <div class="url-actions">
+          <a href="https://opencode.ai/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://opencode.ai/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Documentación oficial de OpenCode:</strong>
+        <span class="url-text">https://opencode.ai/docs/</span>
+        <div class="url-actions">
+          <a href="https://opencode.ai/docs/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://opencode.ai/docs/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Catálogo de modelos de OpenCode Console:</strong>
+        <span class="url-text">https://opencode.ai/console/models</span>
+        <div class="url-actions">
+          <a href="https://opencode.ai/console/models" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://opencode.ai/console/models">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>OpenRouter:</strong>
+        <span class="url-text">https://openrouter.ai/</span>
+        <div class="url-actions">
+          <a href="https://openrouter.ai/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://openrouter.ai/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Nvidia NIM para desarrolladores:</strong>
+        <span class="url-text">https://developer.nvidia.com/nim</span>
+        <div class="url-actions">
+          <a href="https://developer.nvidia.com/nim" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://developer.nvidia.com/nim">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Catálogo comunitario de plugins para DeepSeek Harness (<code>awesome-dsh-plugin</code>):</strong>
+        <span class="url-text">https://github.com/awesome-dsh-plugin/awesome-dsh-plugin</span>
+        <div class="url-actions">
+          <a href="https://github.com/awesome-dsh-plugin/awesome-dsh-plugin" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://github.com/awesome-dsh-plugin/awesome-dsh-plugin">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Hugging Face (Repositorios oficiales y comunitarios):</strong>
+        <span class="url-text">https://huggingface.co/</span>
+        <div class="url-actions">
+          <a href="https://huggingface.co/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://huggingface.co/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Abliteration.ai (Nube privada):</strong>
+        <span class="url-text">https://abliteration.ai/</span>
+        <div class="url-actions">
+          <a href="https://abliteration.ai/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://abliteration.ai/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <div class="url-card">
+        <strong>Incogni (Protección frente a intermediarios de datos citada en el vídeo):</strong>
+        <span class="url-text">https://incogni.com/</span>
+        <div class="url-actions">
+          <a href="https://incogni.com/" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://incogni.com/">📋 COPIAR URL</button>
+        </div>
+      </div>
+
+      <h3>14.4. Fuente Base Audiovisual del Cuaderno</h3>
+
+      <div class="url-card">
+        <strong>Vídeo tutorial base en YouTube — «Cómo usar DeepSeek Mejor que el 99% de las personas (GRATIS)» (canal Alejavi Rivera):</strong>
+        <span class="url-text">https://youtube.com/watch?v=rnpsuTgfMT0&amp;is=42M-PVmBmeYRUAr-</span>
+        <div class="url-actions">
+          <a href="https://youtube.com/watch?v=rnpsuTgfMT0&is=42M-PVmBmeYRUAr-" target="_blank" rel="noopener noreferrer" class="btn-ext-link">🔗 Abrir enlace en nueva ventana</a>
+          <button type="button" class="btn-copy" data-copy-text="https://youtube.com/watch?v=rnpsuTgfMT0&is=42M-PVmBmeYRUAr-">📋 COPIAR URL</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+  <!-- ================================================================= -->
+  <!-- PESTAÑA 13: CRÉDITOS -->
+  <!-- ================================================================= -->
+  <section class="tab-panel" id="sec-13" data-t="CRÉDITOS">
+    <div class="card">
+      <!-- ORDEN OBLIGATORIO: 1. Título de la sección -->
+      <h2>CRÉDITOS Y AUTORÍA DEL TUTORIAL</h2>
+
+      <!-- ORDEN OBLIGATORIO: 2. SVG animado compartido con INICIO -->
+      <div class="svg-hero-wrapper">
+        <div id="svg-slot-credits" class="svg-mount-slot" role="img" aria-label="Ilustración animada compartida del ecosistema DeepSeek en la sección de Créditos"></div>
+      </div>
+
+      <!-- ORDEN OBLIGATORIO: 3. Breve descripción de la ilustración -->
+      <p style="text-align:center;color:var(--text-secondary);font-size:0.9rem;">
+        <strong>Descripción de la ilustración:</strong> Escena vectorial multicapa en formato vertical 4:5 que representa el núcleo de Mezcla de Expertos (MoE 552B) y emblema neuronal de DeepSeek enlazado en tiempo real con sus cuatro pilares operativos: Nube Gratuita (Chat Web <code>Run</code> y App Voz), DeepSeek Harness (arquitectura Cordis de plugins y Modo Creador), Ejecución Local 100% Privada con Ollama (<code>localhost:11434/v1</code>) y API Oficial con compresión de caché KV.
+      </p>
+
+      <!-- ORDEN OBLIGATORIO: 4. Nombre del autor y 5. Texto «Autor del tutorial» -->
+      <div class="credits-author-box">
+        <div class="credits-author-name">Rubén Sbarsky</div>
+        <div class="credits-author-role">Autor del tutorial</div>
+      </div>
+
+      <!-- ORDEN OBLIGATORIO: 6. Información adicional pertinente y 7. Número de versión -->
+      <div class="pedagogy-grid">
+        <div class="pedagogy-box">
+          <h4>FECHA Y HORA DE CREACIÓN (FIJA)</h4>
+          <p style="font-family:monospace;font-size:1.05rem;font-weight:700;color:var(--accent-primary);">15/11/2026 — 21:10:34</p>
+        </div>
+        <div class="pedagogy-box purpose">
+          <h4>VERSIÓN DEL ENTREGABLE</h4>
+          <p style="font-family:monospace;font-size:1.05rem;font-weight:700;color:var(--accent-emerald);">V001 (tutorial_dominando_deepseek_V001.html)</p>
+        </div>
+        <div class="pedagogy-box importance">
+          <h4>ESTÁNDAR DE INGENIERÍA</h4>
+          <p>Desarrollado bajo Metodología Gauntlet V3 y arquitectura Clean Code (Robert C. Martin), 100% autónomo sin dependencias externas y optimizado para Samsung Galaxy A02s (360 px).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-footer-nav"></div>
+  </section>
+
+</main>
+
+<!-- BOTONES FLOTANTES ARRASTRABLES (INICIO Y ARRIBA) -->
+<button type="button" id="fab-home" class="floating-draggable" aria-label="Ir a la pestaña de INICIO desde cualquier lugar" title="Arrastra para mover o pulsa para ir a INICIO">🏠 INICIO</button>
+<button type="button" id="fab-top" class="floating-draggable" aria-label="Subir al comienzo de la pestaña actual" title="Arrastra para mover o pulsa para subir ARRIBA">⬆️ ARRIBA</button>
+
+<script>
+(function() {
+  "use strict";
+
+  const STORAGE_NAMESPACE = "deepseek_tutorial_v001_";
+  const secs = Array.from(document.querySelectorAll("section.tab-panel"));
+  const navChips = Array.from(document.querySelectorAll("#nav-chips-container .chip"));
+  const dr = document.querySelector("#dr");
+  const mb = document.querySelector("#mb");
+  let activeTabIndex = 0;
+  let isSvgPaused = false;
+  let masterSvgTemplate = "";
+
+  /* =========================================================================
+   * 1. ALMACENAMIENTO SEGURO (LOCALSTORAGE CON FALLBACK)
+   * ========================================================================= */
+  function saveSetting(key, value) {
+    try {
+      window.localStorage.setItem(STORAGE_NAMESPACE + key, JSON.stringify(value));
+    } catch (err) {
+      /* Entorno restringido sin localStorage: fallo silencioso controlado */
+    }
+  }
+
+  function loadSetting(key, defaultValue) {
+    try {
+      const raw = window.localStorage.getItem(STORAGE_NAMESPACE + key);
+      return raw !== null ? JSON.parse(raw) : defaultValue;
+    } catch (err) {
+      return defaultValue;
+    }
+  }
+
+  /* =========================================================================
+   * 2. MOTOR SVG COMPARTIDO DESDE PLANTILLA ÚNICA Y FALLBACK DATA:URI
+   * ========================================================================= */
+  function extractAndRemoveMasterSvg() {
+    const sourceNode = document.getElementById("svg-master-source");
+    if (!sourceNode) return;
+    masterSvgTemplate = sourceNode.innerHTML.trim();
+    sourceNode.remove();
+  }
+
+  function buildUniqueSvgMarkup(instancePrefix) {
+    if (!masterSvgTemplate) return "";
+    return masterSvgTemplate.replace(/IDP_/g, instancePrefix + "_");
+  }
+
+  function mountSvgIntoSlot(slotId, instancePrefix) {
+    const slot = document.getElementById(slotId);
+    if (!slot || !masterSvgTemplate) return;
+    try {
+      slot.innerHTML = buildUniqueSvgMarkup(instancePrefix);
+      const svgEl = slot.querySelector("svg");
+      if (!svgEl) {
+        activateDataUriFallback(slot, instancePrefix);
+        return;
+      }
+      svgEl.classList.toggle("svg-paused", isSvgPaused);
+    } catch (err) {
+      activateDataUriFallback(slot, instancePrefix);
+    }
+  }
+
+  function activateDataUriFallback(slot, instancePrefix) {
+    const uniqueSvg = buildUniqueSvgMarkup(instancePrefix);
+    if (!uniqueSvg) return;
+    const encoded = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(uniqueSvg);
+    slot.innerHTML = '<img src="' + encoded + '" alt="Ilustración del ecosistema DeepSeek" style="width:100%;height:100%;object-fit:contain;" />';
+  }
+
+  function ensureVisibleSvgsMounted() {
+    if (activeTabIndex === 0) {
+      const homeSlot = document.getElementById("svg-slot-home");
+      if (homeSlot && !homeSlot.querySelector("svg") && !homeSlot.querySelector("img")) {
+        mountSvgIntoSlot("svg-slot-home", "heroHome");
+      }
+    }
+    if (activeTabIndex === 13) {
+      const creditsSlot = document.getElementById("svg-slot-credits");
+      if (creditsSlot && !creditsSlot.querySelector("svg") && !creditsSlot.querySelector("img")) {
+        mountSvgIntoSlot("svg-slot-credits", "heroCredits");
+      }
+    }
+  }
+
+  function mountAllSvgsForPrint() {
+    mountSvgIntoSlot("svg-slot-home", "heroHome");
+    mountSvgIntoSlot("svg-slot-credits", "heroCredits");
+  }
+
+  /* =========================================================================
+   * 3. NAVEGACIÓN SPA, ÍNDICE LATERAL (#dr) Y BOTONES ANTERIOR/SIGUIENTE
+   * ========================================================================= */
+  const tg = (v) => {
+    dr.classList.toggle("o", v);
+    mb.setAttribute("aria-expanded", String(dr.classList.contains("o")));
+  };
+
+  function go(index, shouldScrollTop = true) {
+    const safeIndex = Math.max(0, Math.min(secs.length - 1, Number(index) || 0));
+    activeTabIndex = safeIndex;
+
+    secs.forEach((sec, idx) => {
+      sec.classList.toggle("active", idx === safeIndex);
+    });
+
+    navChips.forEach((chip, idx) => {
+      const isCurrent = idx === safeIndex;
+      chip.classList.toggle("active", isCurrent);
+      if (isCurrent) {
+        chip.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+      }
+    });
+
+    [...dr.children].forEach((a, j) => a.classList.toggle("on", j == safeIndex));
+
+    ensureVisibleSvgsMounted();
+    saveSetting("activeTab", safeIndex);
+
+    if (shouldScrollTop) {
+      scrollToCurrentTabStart();
+    }
+    updateReadingProgress();
+  }
+
+  function scrollToCurrentTabStart() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function buildIndexDrawerAndFooters() {
+    secs.forEach((s, i) => {
+      const a = document.createElement("a");
+      a.textContent = (i ? i + ". " : "") + (s.dataset.t || s.querySelector("h2").textContent);
+      a.setAttribute("tabindex", "0");
+      a.onclick = () => {
+        go(i);
+        tg(false);
+      };
+      a.onkeydown = (ev) => {
+        if (ev.key === "Enter" || ev.key === " ") {
+          ev.preventDefault();
+          go(i);
+          tg(false);
+        }
+      };
+      dr.appendChild(a);
+
+      const footerNav = s.querySelector(".tab-footer-nav");
+      if (footerNav) {
+        footerNav.innerHTML = "";
+        if (i > 0) {
+          const prevTitle = secs[i - 1].dataset.t;
+          const prevBtn = document.createElement("button");
+          prevBtn.type = "button";
+          prevBtn.className = "btn-nav-step";
+          prevBtn.textContent = "⬅ Anterior: " + prevTitle;
+          prevBtn.onclick = () => go(i - 1);
+          footerNav.appendChild(prevBtn);
+        }
+        if (i < secs.length - 1) {
+          const nextTitle = secs[i + 1].dataset.t;
+          const nextBtn = document.createElement("button");
+          nextBtn.type = "button";
+          nextBtn.className = "btn-nav-step";
+          nextBtn.textContent = "Siguiente: " + nextTitle + " ➡";
+          nextBtn.onclick = () => go(i + 1);
+          footerNav.appendChild(nextBtn);
+        }
+      }
+    });
+  }
+
+  /* =========================================================================
+   * 4. BOTONES FLOTANTES MÓVILES / ARRASTRABLES (INICIO Y ARRIBA)
+   * ========================================================================= */
+  function makeFloatingButtonDraggable(buttonEl, onClickCallback, storageKey) {
+    if (!buttonEl) return;
+    let isDragging = false;
+    let hasMoved = false;
+    let startX = 0;
+    let startY = 0;
+    let initialLeft = 0;
+    let initialTop = 0;
+
+    const savedPos = loadSetting(storageKey, null);
+    if (savedPos && typeof savedPos.left === "number" && typeof savedPos.top === "number") {
+      applyClampedPosition(buttonEl, savedPos.left, savedPos.top);
+    }
+
+    function applyClampedPosition(el, leftPx, topPx) {
+      const maxLeft = Math.max(10, window.innerWidth - el.offsetWidth - 6);
+      const maxTop = Math.max(66, window.innerHeight - el.offsetHeight - 6);
+      const clampedLeft = Math.min(Math.max(6, leftPx), maxLeft);
+      const clampedTop = Math.min(Math.max(66, topPx), maxTop);
+      el.style.left = clampedLeft + "px";
+      el.style.top = clampedTop + "px";
+      el.style.right = "auto";
+      el.style.bottom = "auto";
+    }
+
+    buttonEl.addEventListener("pointerdown", (e) => {
+      isDragging = true;
+      hasMoved = false;
+      startX = e.clientX;
+      startY = e.clientY;
+      const rect = buttonEl.getBoundingClientRect();
+      initialLeft = rect.left;
+      initialTop = rect.top;
+      buttonEl.setPointerCapture(e.pointerId);
+    });
+
+    buttonEl.addEventListener("pointermove", (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (Math.abs(dx) > 6 || Math.abs(dy) > 6) {
+        hasMoved = true;
+        applyClampedPosition(buttonEl, initialLeft + dx, initialTop + dy);
+      }
+    });
+
+    buttonEl.addEventListener("pointerup", (e) => {
+      if (!isDragging) return;
+      isDragging = false;
+      buttonEl.releasePointerCapture(e.pointerId);
+      if (hasMoved) {
+        const rect = buttonEl.getBoundingClientRect();
+        saveSetting(storageKey, { left: rect.left, top: rect.top });
+      } else {
+        onClickCallback();
+      }
+    });
+  }
+
+  /* =========================================================================
+   * 5. COPIA AL PORTAPAPELES CON FALLBACK UNIVERSAL
+   * ========================================================================= */
+  async function copyTextToClipboard(rawText, triggerBtn) {
+    const originalLabel = triggerBtn.textContent;
+    let copied = false;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      try {
+        await navigator.clipboard.writeText(rawText);
+        copied = true;
+      } catch (err) {
+        copied = false;
+      }
+    }
+
+    if (!copied) {
+      try {
+        const tempArea = document.createElement("textarea");
+        tempArea.value = rawText;
+        tempArea.style.position = "fixed";
+        tempArea.style.left = "-9999px";
+        document.body.appendChild(tempArea);
+        tempArea.select();
+        copied = document.execCommand("copy");
+        tempArea.remove();
+      } catch (err) {
+        copied = false;
+      }
+    }
+
+    if (copied) {
+      triggerBtn.textContent = "✓ ¡COPIADO!";
+      setTimeout(() => {
+        triggerBtn.textContent = originalLabel;
+      }, 1800);
+    } else {
+      window.prompt("Copia manualmente el texto seleccionado:", rawText);
+    }
+  }
+
+  /* =========================================================================
+   * 6. BUSCADOR INTERNO GLOBAL Y CONTROLES Q&A
+   * ========================================================================= */
+  function performGlobalSearch(query) {
+    const panel = document.getElementById("search-results-panel");
+    const cleanQuery = query.trim().toLowerCase();
+    if (cleanQuery.length < 2) {
+      panel.style.display = "none";
+      panel.innerHTML = "";
+      return;
+    }
+
+    const matches = [];
+    secs.forEach((sec, idx) => {
+      const textContent = sec.innerText || sec.textContent || "";
+      const pos = textContent.toLowerCase().indexOf(cleanQuery);
+      if (pos !== -1) {
+        const snippetStart = Math.max(0, pos - 40);
+        const snippetEnd = Math.min(textContent.length, pos + 90);
+        const snippet = textContent.slice(snippetStart, snippetEnd).replace(/\s+/g, " ");
+        matches.push({
+          tabIndex: idx,
+          tabTitle: sec.dataset.t,
+          snippet: "..." + snippet + "..."
+        });
+      }
+    });
+
+    panel.style.display = "block";
+    if (matches.length === 0) {
+      panel.innerHTML = "<strong>Sin resultados para «" + cleanQuery.replace(/[<>&]/g, "") + "».</strong> Prueba con otra palabra clave.";
+      return;
+    }
+
+    panel.innerHTML = "<strong>Resultados encontrados (" + matches.length + " pestañas):</strong>";
+    matches.forEach((m) => {
+      const hitBtn = document.createElement("button");
+      hitBtn.type = "button";
+      hitBtn.className = "search-hit-item";
+      hitBtn.innerHTML = "<strong>[" + m.tabTitle + "]</strong> — " + m.snippet.replace(/[<>&]/g, "");
+      hitBtn.onclick = () => {
+        go(m.tabIndex);
+        panel.style.display = "none";
+      };
+      panel.appendChild(hitBtn);
+    });
+  }
+
+  /* =========================================================================
+   * 7. SIMULADOR INTERACTIVO CASO PRÁCTICO 1 (COSTE DE REUNIONES)
+   * ========================================================================= */
+  function initMeetingSimulator() {
+    const inputAttendees = document.getElementById("sim-attendees");
+    const inputHourly = document.getElementById("sim-hourly");
+    const inputDuration = document.getElementById("sim-duration");
+    const totalDisplay = document.getElementById("sim-total-display");
+    const clockDisplay = document.getElementById("sim-timer-clock");
+    const liveCostDisplay = document.getElementById("sim-live-cost");
+    const btnPlay = document.getElementById("btn-sim-play");
+    const btnReset = document.getElementById("btn-sim-reset");
+
+    let elapsedSeconds = 0;
+    let intervalId = null;
+
+    function getBurnRatePerSecond() {
+      const attendees = Math.max(1, Number(inputAttendees.value) || 0);
+      const hourly = Math.max(0, Number(inputHourly.value) || 0);
+      return (attendees * hourly) / 3600;
+    }
+
+    function recalculateStaticTotal() {
+      const attendees = Math.max(1, Number(inputAttendees.value) || 0);
+      const hourly = Math.max(0, Number(inputHourly.value) || 0);
+      const duration = Math.max(0, Number(inputDuration.value) || 0);
+      const total = attendees * hourly * duration;
+      totalDisplay.textContent = total.toFixed(2) + " €";
+    }
+
+    function formatClock(sec) {
+      const hrs = String(Math.floor(sec / 3600)).padStart(2, "0");
+      const mins = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return hrs + ":" + mins + ":" + s;
+    }
+
+    [inputAttendees, inputHourly, inputDuration].forEach((el) => {
+      el.addEventListener("input", recalculateStaticTotal);
+    });
+
+    btnPlay.addEventListener("click", () => {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+        btnPlay.textContent = "▶ Reanudar";
+      } else {
+        btnPlay.textContent = "⏸ Pausar";
+        intervalId = setInterval(() => {
+          elapsedSeconds += 1;
+          clockDisplay.textContent = formatClock(elapsedSeconds);
+          const liveAmount = elapsedSeconds * getBurnRatePerSecond();
+          liveCostDisplay.textContent = liveAmount.toFixed(2) + " €";
+        }, 1000);
+      }
+    });
+
+    btnReset.addEventListener("click", () => {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+        intervalId = null;
+      }
+      elapsedSeconds = 0;
+      btnPlay.textContent = "▶ Play / Pausa";
+      clockDisplay.textContent = "00:00:00";
+      liveCostDisplay.textContent = "0.00 €";
+      recalculateStaticTotal();
+    });
+  }
+
+  /* =========================================================================
+   * 8. IMPRESIÓN Y GUARDADO EN PDF CON APERTURA Y RESTAURACIÓN DE ESTADO
+   * ========================================================================= */
+  let closedDetailsBeforePrint = [];
+
+  function prepareDocumentForPrint() {
+    mountAllSvgsForPrint();
+    closedDetailsBeforePrint = [];
+    document.querySelectorAll("details.qa-item").forEach((det) => {
+      if (!det.open) {
+        closedDetailsBeforePrint.push(det);
+        det.open = true;
+      }
+    });
+  }
+
+  function restoreDocumentAfterPrint() {
+    closedDetailsBeforePrint.forEach((det) => {
+      det.open = false;
+    });
+    closedDetailsBeforePrint = [];
+  }
+
+  /* =========================================================================
+   * 9. INICIALIZACIÓN INTEGRAL Y EVENTOS
+   * ========================================================================= */
+  function updateReadingProgress() {
+    const bar = document.getElementById("reading-progress-bar");
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+    const pct = Math.min(100, Math.max(0, (scrollTop / docHeight) * 100));
+    bar.style.width = pct + "%";
+  }
+
+  function initTutorialApp() {
+    extractAndRemoveMasterSvg();
+    buildIndexDrawerAndFooters();
+    mountSvgIntoSlot("svg-slot-home", "heroHome");
+    mountSvgIntoSlot("svg-slot-credits", "heroCredits");
+
+    /* Eventos del índice lateral (#mb, #dr, #ix) */
+    mb.onclick = () => tg();
+    const ixBtn = document.querySelector("#ix");
+    if (ixBtn) {
+      ixBtn.onclick = () => tg(true);
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") tg(false);
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest("#dr,#mb,#ix")) tg(false);
+    });
+
+    /* Eventos de los chips de la barra superior */
+    navChips.forEach((chip) => {
+      chip.addEventListener("click", () => {
+        const idx = Number(chip.getAttribute("data-tab-index"));
+        go(idx);
+      });
+    });
+
+    /* Botones Q&A: Desplegar todas y Plegar todas */
+    const btnExpandAllQa = document.getElementById("btn-expand-all-qa");
+    const btnCollapseAllQa = document.getElementById("btn-collapse-all-qa");
+    if (btnExpandAllQa && btnCollapseAllQa) {
+      btnExpandAllQa.addEventListener("click", () => {
+        document.querySelectorAll("#sec-9 details.qa-item").forEach((d) => { d.open = true; });
+      });
+      btnCollapseAllQa.addEventListener("click", () => {
+        document.querySelectorAll("#sec-9 details.qa-item").forEach((d) => { d.open = false; });
+      });
+    }
+
+    /* Delegación de botones COPIAR */
+    document.addEventListener("click", (e) => {
+      const copyBtn = e.target.closest(".btn-copy");
+      if (!copyBtn) return;
+      const directText = copyBtn.getAttribute("data-copy-text");
+      if (directText) {
+        copyTextToClipboard(directText, copyBtn);
+        return;
+      }
+      const targetId = copyBtn.getAttribute("data-copy-target");
+      const targetNode = targetId ? document.getElementById(targetId) : null;
+      if (targetNode) {
+        copyTextToClipboard(targetNode.textContent.trim(), copyBtn);
+      }
+    });
+
+    /* Tamaño de letra, tema, pausa SVG e impresión */
+    let currentFontScale = loadSetting("fontScale", 1);
+    document.documentElement.style.setProperty("--font-scale", String(currentFontScale));
+
+    document.getElementById("btn-font-dec").addEventListener("click", () => {
+      currentFontScale = Math.max(0.85, Number((currentFontScale - 0.08).toFixed(2)));
+      document.documentElement.style.setProperty("--font-scale", String(currentFontScale));
+      saveSetting("fontScale", currentFontScale);
+    });
+
+    document.getElementById("btn-font-inc").addEventListener("click", () => {
+      currentFontScale = Math.min(1.35, Number((currentFontScale + 0.08).toFixed(2)));
+      document.documentElement.style.setProperty("--font-scale", String(currentFontScale));
+      saveSetting("fontScale", currentFontScale);
+    });
+
+    const savedTheme = loadSetting("theme", "dark");
+    document.documentElement.setAttribute("data-theme", savedTheme);
+    document.getElementById("btn-theme-toggle").addEventListener("click", () => {
+      const nextTheme = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", nextTheme);
+      saveSetting("theme", nextTheme);
+    });
+
+    document.getElementById("btn-toggle-svg-anim").addEventListener("click", () => {
+      isSvgPaused = !isSvgPaused;
+      document.querySelectorAll(".svg-mount-slot svg").forEach((svg) => {
+        svg.classList.toggle("svg-paused", isSvgPaused);
+      });
+    });
+
+    window.addEventListener("beforeprint", prepareDocumentForPrint);
+    window.addEventListener("afterprint", restoreDocumentAfterPrint);
+
+    document.getElementById("btn-print-pdf").addEventListener("click", () => {
+      try {
+        prepareDocumentForPrint();
+        window.print();
+        setTimeout(restoreDocumentAfterPrint, 900);
+      } catch (err) {
+        restoreDocumentAfterPrint();
+        window.alert("Abre este archivo directamente en el navegador y utiliza Ctrl+P o Cmd+P");
+      }
+    });
+
+    /* Buscador global */
+    const searchInput = document.getElementById("global-search-input");
+    searchInput.addEventListener("input", () => performGlobalSearch(searchInput.value));
+    document.getElementById("btn-clear-search").addEventListener("click", () => {
+      searchInput.value = "";
+      performGlobalSearch("");
+    });
+
+    /* Checklists persistentes */
+    document.querySelectorAll('input[type="checkbox"][data-check-id]').forEach((chk) => {
+      const checkId = chk.getAttribute("data-check-id");
+      chk.checked = Boolean(loadSetting("check_" + checkId, false));
+      chk.addEventListener("change", () => {
+        saveSetting("check_" + checkId, chk.checked);
+      });
+    });
+
+    /* Botones flotantes arrastrables: INICIO y ARRIBA */
+    makeFloatingButtonDraggable(
+      document.getElementById("fab-home"),
+      () => go(0, true),
+      "fab_home_pos"
+    );
+    makeFloatingButtonDraggable(
+      document.getElementById("fab-top"),
+      () => scrollToCurrentTabStart(),
+      "fab_top_pos"
+    );
+
+    initMeetingSimulator();
+
+    /* Restaurar última pestaña visitada */
+    const initialTab = loadSetting("activeTab", 0);
+    go(initialTab, false);
+
+    /* Guardián periódico del SVG (repara contenedores si quedasen vacíos) */
+    setInterval(ensureVisibleSvgsMounted, 2500);
+    window.addEventListener("scroll", updateReadingProgress, { passive: true });
+    updateReadingProgress();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTutorialApp);
+  } else {
+    initTutorialApp();
+  }
+})();
+</script>
+</body>
+</html>
